@@ -1,0 +1,204 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@googlemaps/three</title>
+	<meta name="description" content="Documentation for @googlemaps/three">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@googlemaps/three</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>@googlemaps/three</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#google-maps-threejs-overlay-view-and-utilities" id="google-maps-threejs-overlay-view-and-utilities" style="color: inherit; text-decoration: none;">
+					<h1>Google Maps ThreeJS Overlay View and Utilities</h1>
+				</a>
+				<p><a href="https://www.npmjs.com/package/@googlemaps/three"><img src="https://img.shields.io/npm/v/@googlemaps/three" alt="npm"></a>
+					<img src="https://github.com/googlemaps/js-three/workflows/Build/badge.svg" alt="Build">
+					<img src="https://github.com/googlemaps/js-three/workflows/Release/badge.svg" alt="Release">
+					<a href="https://codecov.io/gh/googlemaps/js-three"><img src="https://codecov.io/gh/googlemaps/js-three/branch/main/graph/badge.svg" alt="codecov"></a>
+					<img src="https://img.shields.io/github/contributors/googlemaps/js-three?color=green" alt="GitHub contributors">
+					<a href="https://github.com/semantic-release/semantic-release"><img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg" alt="semantic-release"></a>
+				<a href="https://github.com/apps/in-solidarity"><img src="https://github.com/jpoehnelt/in-solidarity-bot/raw/main/static//badge-flat.png" alt=""></a></p>
+				<a href="#description" id="description" style="color: inherit; text-decoration: none;">
+					<h2>Description</h2>
+				</a>
+				<p>Add <a href="https://threejs.org">three.js</a> objects to Google Maps Platform JS. The library provides a <code>ThreeJSOverlayView</code> class extending <code>google.maps.WebglOverlayView</code> and utility functions such as <code>latLngToMeters</code>, <code>latLngToVector3</code>, and <code>latLngToVector3Relative</code>, for converting latitude and longitude to vectors in the mercator coordinate space.</p>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h2>Install</h2>
+				</a>
+				<p>Available via npm as the package <a href="https://www.npmjs.com/package/@googlemaps/three">@googlemaps/three</a>.</p>
+				<pre><code><span style="color: #001080">npm</span><span style="color: #000000"> </span><span style="color: #001080">i</span><span style="color: #000000"> @</span><span style="color: #001080">googlemaps</span><span style="color: #000000">/</span><span style="color: #001080">three</span>
+</code></pre>
+				<p>Alternativly you may add the umd package directly to the html document using the unpkg link.</p>
+				<pre><code><span style="color: #000000">&lt;</span><span style="color: #001080">script</span><span style="color: #000000"> </span><span style="color: #001080">src</span><span style="color: #000000">=</span><span style="color: #A31515">&quot;https://unpkg.com/@googlemaps/three/dist/index.min.js&quot;</span><span style="color: #000000">&gt;&lt;/</span><span style="color: #267F99">script</span><span style="color: #000000">&gt;</span>
+</code></pre>
+				<p>When adding via unpkg, the package can be accessed at <code>google.maps.plugins.three</code>. A version can be specified by using <code>https://unpkg.com/@googlemaps/three@VERSION/dist/...</code>.</p>
+				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+					<h2>Documentation</h2>
+				</a>
+				<p>Checkout the the reference <a href="https://googlemaps.github.io/js-three/index.html">documentation</a>.</p>
+				<blockquote>
+					<p>Note: All methods and objects in this library follow a default up axis of (0, 1, 0), y up, matching that of three.js.</p>
+				</blockquote>
+				<img src="https://storage.googleapis.com/geo-devrel-public-buckets/orientation.jpg" alt="orientation of axes" width="400"/>
+				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+					<h2>Example</h2>
+				</a>
+				<p>The following example provides a skeleton for adding objects to the map with this library.</p>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">map</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">google</span><span style="color: #000000">.</span><span style="color: #001080">maps</span><span style="color: #000000">.</span><span style="color: #795E26">Map</span><span style="color: #000000">(</span><span style="color: #001080">document</span><span style="color: #000000">.</span><span style="color: #795E26">getElementById</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;map&quot;</span><span style="color: #000000">), </span><span style="color: #001080">mapOptions</span><span style="color: #000000">);</span>
+<span style="color: #008000">// instantiate a ThreeJS Scene</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">scene</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Scene</span><span style="color: #000000">();</span>
+
+<span style="color: #008000">// Create a box mesh</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">box</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Mesh</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">BoxBufferGeometry</span><span style="color: #000000">(</span><span style="color: #098658">10</span><span style="color: #000000">, </span><span style="color: #098658">50</span><span style="color: #000000">, </span><span style="color: #098658">10</span><span style="color: #000000">),</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MeshNormalMaterial</span><span style="color: #000000">(),</span>
+<span style="color: #000000">);</span>
+
+<span style="color: #008000">// set position at center of map</span>
+<span style="color: #001080">box</span><span style="color: #000000">.</span><span style="color: #001080">position</span><span style="color: #000000">.</span><span style="color: #795E26">copy</span><span style="color: #000000">(</span><span style="color: #795E26">latLngToVector3</span><span style="color: #000000">(</span><span style="color: #001080">mapOptions</span><span style="color: #000000">.</span><span style="color: #001080">center</span><span style="color: #000000">));</span>
+<span style="color: #008000">// set position vertically</span>
+<span style="color: #001080">box</span><span style="color: #000000">.</span><span style="color: #001080">position</span><span style="color: #000000">.</span><span style="color: #795E26">setY</span><span style="color: #000000">(</span><span style="color: #098658">25</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// add box mesh to the scene</span>
+<span style="color: #001080">scene</span><span style="color: #000000">.</span><span style="color: #795E26">add</span><span style="color: #000000">(</span><span style="color: #001080">box</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// instantiate the ThreeJS Overlay with the scene and map</span>
+<span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ThreeJSOverlayView</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">scene</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">map</span><span style="color: #000000">,</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// rotate the box using requestAnimationFrame</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">animate</span><span style="color: #000000"> = () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">box</span><span style="color: #000000">.</span><span style="color: #795E26">rotateY</span><span style="color: #000000">(</span><span style="color: #001080">MathUtils</span><span style="color: #000000">.</span><span style="color: #795E26">degToRad</span><span style="color: #000000">(</span><span style="color: #098658">0.1</span><span style="color: #000000">));</span>
+
+<span style="color: #000000">  </span><span style="color: #795E26">requestAnimationFrame</span><span style="color: #000000">(</span><span style="color: #001080">animate</span><span style="color: #000000">);</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #008000">// start animation loop</span>
+<span style="color: #795E26">requestAnimationFrame</span><span style="color: #000000">(</span><span style="color: #001080">animate</span><span style="color: #000000">);</span>
+</code></pre>
+				<p>This adds a box to the map.</p>
+				<img src="https://storage.googleapis.com/geo-devrel-public-buckets/box.png" alt="threejs box on map" width="400"/>
+				<a href="#demos" id="demos" style="color: inherit; text-decoration: none;">
+					<h2>Demos</h2>
+				</a>
+				<p>View the package in action:</p>
+				<ul>
+					<li><a href="https://googlemaps.github.io/js-three/public/basic/">Basic Example</a></li>
+					<li><a href="https://googlemaps.github.io/js-three/public/anchor/">Anchor Example</a></li>
+					<li><a href="https://googlemaps.github.io/js-three/public/orientation/">Orientation Example</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class">
+						<a href="classes/threejsoverlayview.html" class="tsd-kind-icon">ThreeJSOverlay<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/latlngaltitudeliteral.html" class="tsd-kind-icon">Lat<wbr>Lng<wbr>Altitude<wbr>Literal</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/threejsoverlayviewoptions.html" class="tsd-kind-icon">ThreeJSOverlay<wbr>View<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#earth_radius" class="tsd-kind-icon">EARTH_<wbr>RADIUS</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#world_size" class="tsd-kind-icon">WORLD_<wbr>SIZE</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#latlngtometers" class="tsd-kind-icon">lat<wbr>Lng<wbr>ToMeters</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#latlngtovector3" class="tsd-kind-icon">lat<wbr>Lng<wbr>ToVector3</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#latlngtovector3relative" class="tsd-kind-icon">lat<wbr>Lng<wbr>ToVector3<wbr>Relative</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
