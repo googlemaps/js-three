@@ -42,6 +42,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_WOMBAT_TOKEN }}
       - run: |
           npm i
+          npm run build
           npm run docs
           cp -r dist docs/dist
           cp -r public docs/public
