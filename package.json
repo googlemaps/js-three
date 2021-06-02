@@ -1,13 +1,13 @@
 {
   "name": "@googlemaps/three",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "keywords": [
     "google",
     "maps",
     "webgl",
     "threejs"
   ],
-  "homepage": "https://github.com/googlemaps/js-threejs",
+  "homepage": "https://github.com/googlemaps/js-three",
   "bugs": {
     "url": "https://github.com/googlemaps/js-three/issues"
   },
