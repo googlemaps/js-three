@@ -1,0 +1,82 @@
+{
+  "name": "@googlemaps/three",
+  "version": "1.0.0",
+  "keywords": [
+    "google",
+    "maps",
+    "webgl",
+    "threejs"
+  ],
+  "homepage": "https://github.com/googlemaps/js-threejs",
+  "bugs": {
+    "url": "https://github.com/googlemaps/js-three/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/googlemaps/js-three.git"
+  },
+  "license": "Apache-2.0",
+  "author": "Justin Poehnelt",
+  "files": [
+    "dist/*"
+  ],
+  "main": "dist/index.umd.js",
+  "unpkg": "dist/index.min.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "docs": "typedoc src/index.ts",
+    "format": "prettier *.json *.js e2e/* --write && eslint src/* --fix",
+    "lint": "eslint src/*",
+    "prepare": "rollup -c",
+    "test": "jest src/*",
+    "test:e2e": "jest --passWithNoTests e2e/*",
+    "build": "rm -rf dist && rollup -c && npm run build:examples",
+    "build:examples": "rm -rf public && rollup -c rollup.config.examples.js",
+    "start": "rollup -c rollup.config.examples.js -w"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.14.2",
+    "@babel/runtime-corejs3": "^7.14.0",
+    "@googlemaps/jest-mocks": "^0.1.1",
+    "@googlemaps/js-api-loader": "^1.11.4",
+    "@rollup/plugin-html": "^0.2.3",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@types/d3-random": "^2.2.0",
+    "@types/google.maps": "^3.44.5",
+    "@types/jest": "^26.0.23",
+    "@types/proj4": "^2.5.0",
+    "@types/selenium-webdriver": "^4.0.12",
+    "@types/stats.js": "^0.17.0",
+    "@types/three": "^0.128.0",
+    "@typescript-eslint/eslint-plugin": ">=4.24.0",
+    "@typescript-eslint/parser": ">=4.24.0",
+    "chromedriver": "^90.0.0",
+    "core-js": "^3.12.1",
+    "d3-random": "^2.2.2",
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-prettier": "^3.4.0",
+    "geckodriver": "^2.0.0",
+    "jest": "^26.6.3",
+    "prettier": "^2.3.0",
+    "rollup": "^2.48.0",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "selenium-webdriver": "^4.0.0-beta.3",
+    "ts-jest": "^26.5.6",
+    "typedoc": "^0.20.36",
+    "typescript": "^4.2.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://wombat-dressing-room.appspot.com"
+  },
+  "dependencies": {
+    "three": "^0.128.0"
+  }
+}
