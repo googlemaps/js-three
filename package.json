@@ -52,7 +52,7 @@
     "@types/three": "^0.128.0",
     "@typescript-eslint/eslint-plugin": ">=4.24.0",
     "@typescript-eslint/parser": ">=4.24.0",
-    "chromedriver": "^90.0.0",
+    "chromedriver": "^90.0.1",
     "core-js": "^3.13.1",
     "d3-random": "^2.2.2",
     "eslint": "^7.27.0",
