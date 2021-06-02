@@ -44,7 +44,7 @@ jobs:
           npm i
           npm run docs
           cp -r dist docs/dist
-          cp -r examples docs/examples
+          cp -r public docs/public
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
