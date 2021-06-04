@@ -55,11 +55,11 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
    */
   readonly scene: Scene;
 
-  private camera: PerspectiveCamera;
-  private renderer: WebGLRenderer;
-  private scale: Float32Array;
-  private rotation: Float32Array;
-  private overlay: google.maps.WebglOverlayView;
+  protected readonly camera: PerspectiveCamera;
+  protected readonly scale: Float32Array;
+  protected readonly rotation: Float32Array;
+  protected readonly overlay: google.maps.WebglOverlayView;
+  protected renderer: WebGLRenderer;
 
   constructor({
     anchor = { lat: 0, lng: 0, altitude: 0 },
