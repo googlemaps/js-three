@@ -32,10 +32,6 @@ When adding via unpkg, the package can be accessed at `google.maps.plugins.three
 
 Checkout the the reference [documentation](https://googlemaps.github.io/js-three/index.html).
 
-> Note: All methods and objects in this library follow a default up axis of (0, 1, 0), y up, matching that of three.js.
-
-<img src="https://storage.googleapis.com/geo-devrel-public-buckets/orientation.jpg" alt="orientation of axes" width="400"/>
-
 ## Example
 
 The following example provides a skeleton for adding objects to the map with this library.
@@ -53,8 +49,12 @@ const box = new Mesh(
 
 // set position at center of map
 box.position.copy(latLngToVector3(mapOptions.center));
+
 // set position vertically
-box.position.setY(25);
+box.position.setZ(25);
+
+// rotate to match z up default of overlay
+box.rotateX(Math.PI / 2);
 
 // add box mesh to the scene
 scene.add(box);

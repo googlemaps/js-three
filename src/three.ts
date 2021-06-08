@@ -41,9 +41,6 @@ export interface ThreeJSOverlayViewOptions {
 
 /**
  * Add a [three.js](https://threejs.org) scene as a [Google Maps WebglOverlayView](http://goo.gle/webgloverlayview-ref).
- *
- * **Note**: The scene will be rotated to a default up axis of (0, 1, 0) matching that of three.js.
- * *
  */
 export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
   /**
@@ -75,9 +72,6 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
     this.rotation = rotation;
     this.scale = scale;
     this.scene = scene;
-
-    // rotate scene consistent with y up in THREE
-    this.scene.rotation.x = Math.PI / 2;
 
     this.overlay.onAdd = this.onAdd.bind(this);
     this.overlay.onRemove = this.onRemove.bind(this);

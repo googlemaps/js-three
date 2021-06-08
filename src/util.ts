@@ -50,26 +50,26 @@ export function latLngToMeters(
 }
 
 /**
- * Converts latitude and longitude to world space coordinates with y up.
+ * Converts latitude and longitude to world space coordinates.
  */
 export function latLngToVector3(
   point: google.maps.LatLngLiteral | google.maps.LatLng,
   target = new Vector3()
-) {
+): Vector3 {
   const { x, y } = latLngToMeters(point);
 
-  return target.set(x, 0, -y);
+  return target.set(x, y, 0);
 }
 
 /**
  * Converts latitude and longitude to world space coordinates relative
- * to a reference location with y up.
+ * to a reference location.
  */
 export function latLngToVector3Relative(
   point: google.maps.LatLngLiteral | google.maps.LatLng,
   reference: google.maps.LatLngLiteral | google.maps.LatLng,
   target = new Vector3()
-) {
+): Vector3 {
   const p = latLngToVector3(point);
   const r = latLngToVector3(reference);
 

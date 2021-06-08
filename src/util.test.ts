@@ -73,8 +73,8 @@ test.each([
 ])("latLngToVector3 is correct", (latLng, projected) => {
   const vector = latLngToVector3(latLng);
   expect(vector.x).toBeCloseTo(projected.x);
-  expect(vector.y).toBeCloseTo(0);
-  expect(vector.z).toBeCloseTo(-projected.y);
+  expect(vector.y).toBeCloseTo(projected.y);
+  expect(vector.z).toBeCloseTo(0);
 });
 
 test("latLngToVector3Relative is correct", () => {
@@ -84,6 +84,6 @@ test("latLngToVector3Relative is correct", () => {
   );
 
   expect(relative.x).toBeCloseTo(-111195.10117748393);
-  expect(relative.y).toBeCloseTo(0);
-  expect(relative.z).toBeCloseTo(-111200.74693490766);
+  expect(relative.y).toBeCloseTo(-111200.74693490766);
+  expect(relative.z).toBeCloseTo(0);
 });

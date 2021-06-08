@@ -46,13 +46,16 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   // Create a box mesh
   const box = new Mesh(
     new BoxBufferGeometry(10, 50, 10),
-    new MeshNormalMaterial(),
+    new MeshNormalMaterial()
   );
 
   // set position at center of map
   box.position.copy(latLngToVector3(mapOptions.center));
   // set position vertically
-  box.position.setY(25);
+  box.position.setZ(25);
+
+  // rotate to match z up default of overlay
+  box.rotateX(Math.PI / 2);
 
   // add box mesh to the scene
   scene.add(box);
