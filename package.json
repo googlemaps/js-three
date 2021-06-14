@@ -44,7 +44,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@types/d3-random": "^2.2.0",
-    "@types/google.maps": "^3.45.1",
+    "@types/google.maps": "^3.45.2",
     "@types/jest": "^26.0.23",
     "@types/proj4": "^2.5.0",
     "@types/selenium-webdriver": "^4.0.13",
