@@ -53,7 +53,7 @@ test("instantiates with defaults", () => {
 test("instantiates with map and calls setMap", () => {
   const map = new Map(
     document.createElement("div"),
-    {},
+    {}
   ) as unknown as google.maps.Map;
 
   const overlay = new ThreeJSOverlayView({
@@ -66,7 +66,7 @@ test("instantiates with map and calls setMap", () => {
 test("setMap is called on overlay", () => {
   const map = new Map(
     document.createElement("div"),
-    {},
+    {}
   ) as unknown as google.maps.Map;
   const overlay = new ThreeJSOverlayView({});
   overlay.setMap(map);
@@ -113,6 +113,6 @@ test("addListener is called on overlay", () => {
   expect(overlay.addListener(eventName, handler)).toBeDefined();
   expect(overlay["overlay"].addListener).toHaveBeenCalledWith(
     eventName,
-    handler,
+    handler
   );
 });
