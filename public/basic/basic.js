@@ -112,7 +112,13 @@ class ThreeJSOverlayView {
         this.renderer.setPixelRatio(width / clientWidth);
         this.renderer.setSize(width, height, false);
     }
-    onContextLost() { }
+    onContextLost() {
+        if (!this.renderer) {
+            return;
+        }
+        this.renderer.dispose();
+        this.renderer = null;
+    }
     onDraw(gl, transformer) {
         const { lat, lng, altitude } = this.anchor;
         this.camera.projectionMatrix.fromArray(transformer.fromLatLngAltitude({ lat, lng }, altitude, this.rotation, this.scale));

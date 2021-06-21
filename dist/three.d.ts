@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /// <reference types="google.maps" />
-import { Scene } from "three";
+import { PerspectiveCamera, Scene, WebGLRenderer } from "three";
 export interface LatLngAltitudeLiteral extends google.maps.LatLngLiteral {
     altitude: number;
 }
@@ -45,11 +45,11 @@ export declare class ThreeJSOverlayView implements google.maps.WebglOverlayView 
      * See [[ThreeJSOverlayViewOptions.scene]]
      */
     readonly scene: Scene;
-    private camera;
-    private renderer;
-    private scale;
-    private rotation;
-    private overlay;
+    protected readonly camera: PerspectiveCamera;
+    protected readonly scale: Float32Array;
+    protected readonly rotation: Float32Array;
+    protected readonly overlay: google.maps.WebglOverlayView;
+    protected renderer: WebGLRenderer;
     constructor({ anchor, rotation, scale, scene, map, }: ThreeJSOverlayViewOptions);
     onAdd(): void;
     onRemove(): void;
