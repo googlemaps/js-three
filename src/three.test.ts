@@ -15,7 +15,7 @@
  */
 
 import { Map, initialize } from "@googlemaps/jest-mocks";
-import { PerspectiveCamera, Scene } from "three";
+import { PerspectiveCamera, Scene, WebGLRenderer } from "three";
 
 import { ThreeJSOverlayView } from "./three";
 
@@ -72,6 +72,23 @@ test("setMap is called on overlay", () => {
   overlay.setMap(map);
 
   expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
+});
+
+test("onContext lost disposes of renderer", () => {
+  const overlay = new ThreeJSOverlayView({});
+
+  overlay.onContextLost(); // noop
+  expect(overlay["renderer"]).toBeNull();
+
+  const dispose = jest.fn();
+  overlay["renderer"] = {
+    dispose,
+  } as unknown as WebGLRenderer;
+
+  overlay.onContextLost();
+
+  expect(dispose).toHaveBeenCalled();
+  expect(overlay["renderer"]).toBeNull();
 });
 
 test("getMap is called on overlay", () => {

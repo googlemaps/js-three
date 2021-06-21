@@ -169,7 +169,14 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
     this.renderer.setSize(width, height, false);
   }
 
-  onContextLost() {}
+  onContextLost() {
+    if (!this.renderer) {
+      return;
+    }
+
+    this.renderer.dispose();
+    this.renderer = null;
+  }
 
   onDraw(
     gl: WebGLRenderingContext,
