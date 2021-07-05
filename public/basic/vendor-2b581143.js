@@ -249,6 +249,8 @@ for ( let i = 0; i < 256; i ++ ) {
 
 }
 
+let _seed = 1234567;
+
 
 const DEG2RAD = Math.PI / 180;
 const RAD2DEG = 180 / Math.PI;
@@ -284,10 +286,115 @@ function euclideanModulo( n, m ) {
 
 }
 
+// Linear mapping from range <a1, a2> to range <b1, b2>
+function mapLinear( x, a1, a2, b1, b2 ) {
+
+	return b1 + ( x - a1 ) * ( b2 - b1 ) / ( a2 - a1 );
+
+}
+
+// https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/inverse-lerp-a-super-useful-yet-often-overlooked-function-r5230/
+function inverseLerp( x, y, value ) {
+
+	if ( x !== y ) {
+
+		return ( value - x ) / ( y - x );
+
+		 } else {
+
+		return 0;
+
+		 }
+
+}
+
 // https://en.wikipedia.org/wiki/Linear_interpolation
 function lerp( x, y, t ) {
 
 	return ( 1 - t ) * x + t * y;
+
+}
+
+// http://www.rorydriscoll.com/2016/03/07/frame-rate-independent-damping-using-lerp/
+function damp( x, y, lambda, dt ) {
+
+	return lerp( x, y, 1 - Math.exp( - lambda * dt ) );
+
+}
+
+// https://www.desmos.com/calculator/vcsjnyz7x4
+function pingpong( x, length = 1 ) {
+
+	return length - Math.abs( euclideanModulo( x, length * 2 ) - length );
+
+}
+
+// http://en.wikipedia.org/wiki/Smoothstep
+function smoothstep( x, min, max ) {
+
+	if ( x <= min ) return 0;
+	if ( x >= max ) return 1;
+
+	x = ( x - min ) / ( max - min );
+
+	return x * x * ( 3 - 2 * x );
+
+}
+
+function smootherstep( x, min, max ) {
+
+	if ( x <= min ) return 0;
+	if ( x >= max ) return 1;
+
+	x = ( x - min ) / ( max - min );
+
+	return x * x * x * ( x * ( x * 6 - 15 ) + 10 );
+
+}
+
+// Random integer from <low, high> interval
+function randInt( low, high ) {
+
+	return low + Math.floor( Math.random() * ( high - low + 1 ) );
+
+}
+
+// Random float from <low, high> interval
+function randFloat( low, high ) {
+
+	return low + Math.random() * ( high - low );
+
+}
+
+// Random float from <-range/2, range/2> interval
+function randFloatSpread( range ) {
+
+	return range * ( 0.5 - Math.random() );
+
+}
+
+// Deterministic pseudo-random float in the interval [ 0, 1 ]
+function seededRandom( s ) {
+
+	if ( s !== undefined ) _seed = s % 2147483647;
+
+	// Park-Miller algorithm
+
+	_seed = _seed * 16807 % 2147483647;
+
+	return ( _seed - 1 ) / 2147483646;
+
+}
+
+function degToRad( degrees ) {
+
+	return degrees * DEG2RAD;
+
+}
+
+function radToDeg( radians ) {
+
+	return radians * RAD2DEG;
 
 }
 
@@ -297,11 +404,99 @@ function isPowerOfTwo( value ) {
 
 }
 
+function ceilPowerOfTwo( value ) {
+
+	return Math.pow( 2, Math.ceil( Math.log( value ) / Math.LN2 ) );
+
+}
+
 function floorPowerOfTwo( value ) {
 
 	return Math.pow( 2, Math.floor( Math.log( value ) / Math.LN2 ) );
 
 }
+
+function setQuaternionFromProperEuler( q, a, b, c, order ) {
+
+	// Intrinsic Proper Euler Angles - see https://en.wikipedia.org/wiki/Euler_angles
+
+	// rotations are applied to the axes in the order specified by 'order'
+	// rotation by angle 'a' is applied first, then by angle 'b', then by angle 'c'
+	// angles are in radians
+
+	const cos = Math.cos;
+	const sin = Math.sin;
+
+	const c2 = cos( b / 2 );
+	const s2 = sin( b / 2 );
+
+	const c13 = cos( ( a + c ) / 2 );
+	const s13 = sin( ( a + c ) / 2 );
+
+	const c1_3 = cos( ( a - c ) / 2 );
+	const s1_3 = sin( ( a - c ) / 2 );
+
+	const c3_1 = cos( ( c - a ) / 2 );
+	const s3_1 = sin( ( c - a ) / 2 );
+
+	switch ( order ) {
+
+		case 'XYX':
+			q.set( c2 * s13, s2 * c1_3, s2 * s1_3, c2 * c13 );
+			break;
+
+		case 'YZY':
+			q.set( s2 * s1_3, c2 * s13, s2 * c1_3, c2 * c13 );
+			break;
+
+		case 'ZXZ':
+			q.set( s2 * c1_3, s2 * s1_3, c2 * s13, c2 * c13 );
+			break;
+
+		case 'XZX':
+			q.set( c2 * s13, s2 * s3_1, s2 * c3_1, c2 * c13 );
+			break;
+
+		case 'YXY':
+			q.set( s2 * c3_1, c2 * s13, s2 * s3_1, c2 * c13 );
+			break;
+
+		case 'ZYZ':
+			q.set( s2 * s3_1, s2 * c3_1, c2 * s13, c2 * c13 );
+			break;
+
+		default:
+			console.warn( 'THREE.MathUtils: .setQuaternionFromProperEuler() encountered an unknown order: ' + order );
+
+	}
+
+}
+
+var MathUtils = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	DEG2RAD: DEG2RAD,
+	RAD2DEG: RAD2DEG,
+	generateUUID: generateUUID,
+	clamp: clamp,
+	euclideanModulo: euclideanModulo,
+	mapLinear: mapLinear,
+	inverseLerp: inverseLerp,
+	lerp: lerp,
+	damp: damp,
+	pingpong: pingpong,
+	smoothstep: smoothstep,
+	smootherstep: smootherstep,
+	randInt: randInt,
+	randFloat: randFloat,
+	randFloatSpread: randFloatSpread,
+	seededRandom: seededRandom,
+	degToRad: degToRad,
+	radToDeg: radToDeg,
+	isPowerOfTwo: isPowerOfTwo,
+	ceilPowerOfTwo: ceilPowerOfTwo,
+	floorPowerOfTwo: floorPowerOfTwo,
+	setQuaternionFromProperEuler: setQuaternionFromProperEuler
+});
 
 class Vector2 {
 
@@ -25262,47 +25457,84 @@ Scene.prototype.isScene = true;
 
 /**
  * parameters = {
- *  color: <hex>,
  *  opacity: <float>,
  *
- *  linewidth: <float>,
- *  linecap: "round",
- *  linejoin: "round"
+ *  bumpMap: new THREE.Texture( <Image> ),
+ *  bumpScale: <float>,
+ *
+ *  normalMap: new THREE.Texture( <Image> ),
+ *  normalMapType: THREE.TangentSpaceNormalMap,
+ *  normalScale: <Vector2>,
+ *
+ *  displacementMap: new THREE.Texture( <Image> ),
+ *  displacementScale: <float>,
+ *  displacementBias: <float>,
+ *
+ *  wireframe: <boolean>,
+ *  wireframeLinewidth: <float>
+ *
+ *  morphTargets: <bool>,
+ *  morphNormals: <bool>,
+ *
+ *  flatShading: <bool>
  * }
  */
 
-class LineBasicMaterial extends Material {
+class MeshNormalMaterial extends Material {
 
 	constructor( parameters ) {
 
 		super();
 
-		this.type = 'LineBasicMaterial';
+		this.type = 'MeshNormalMaterial';
 
-		this.color = new Color( 0xffffff );
+		this.bumpMap = null;
+		this.bumpScale = 1;
 
-		this.linewidth = 1;
-		this.linecap = 'round';
-		this.linejoin = 'round';
+		this.normalMap = null;
+		this.normalMapType = TangentSpaceNormalMap;
+		this.normalScale = new Vector2( 1, 1 );
+
+		this.displacementMap = null;
+		this.displacementScale = 1;
+		this.displacementBias = 0;
+
+		this.wireframe = false;
+		this.wireframeLinewidth = 1;
+
+		this.fog = false;
 
 		this.morphTargets = false;
+		this.morphNormals = false;
+
+		this.flatShading = false;
 
 		this.setValues( parameters );
 
 	}
 
-
 	copy( source ) {
 
 		super.copy( source );
 
-		this.color.copy( source.color );
+		this.bumpMap = source.bumpMap;
+		this.bumpScale = source.bumpScale;
 
-		this.linewidth = source.linewidth;
-		this.linecap = source.linecap;
-		this.linejoin = source.linejoin;
+		this.normalMap = source.normalMap;
+		this.normalMapType = source.normalMapType;
+		this.normalScale.copy( source.normalScale );
+
+		this.displacementMap = source.displacementMap;
+		this.displacementScale = source.displacementScale;
+		this.displacementBias = source.displacementBias;
+
+		this.wireframe = source.wireframe;
+		this.wireframeLinewidth = source.wireframeLinewidth;
 
 		this.morphTargets = source.morphTargets;
+		this.morphNormals = source.morphNormals;
+
+		this.flatShading = source.flatShading;
 
 		return this;
 
@@ -25310,307 +25542,7 @@ class LineBasicMaterial extends Material {
 
 }
 
-LineBasicMaterial.prototype.isLineBasicMaterial = true;
-
-const _start$1 = /*@__PURE__*/ new Vector3();
-const _end$1 = /*@__PURE__*/ new Vector3();
-const _inverseMatrix$1 = /*@__PURE__*/ new Matrix4();
-const _ray$1 = /*@__PURE__*/ new Ray();
-const _sphere$1 = /*@__PURE__*/ new Sphere();
-
-class Line extends Object3D {
-
-	constructor( geometry = new BufferGeometry(), material = new LineBasicMaterial() ) {
-
-		super();
-
-		this.type = 'Line';
-
-		this.geometry = geometry;
-		this.material = material;
-
-		this.updateMorphTargets();
-
-	}
-
-	copy( source ) {
-
-		super.copy( source );
-
-		this.material = source.material;
-		this.geometry = source.geometry;
-
-		return this;
-
-	}
-
-	computeLineDistances() {
-
-		const geometry = this.geometry;
-
-		if ( geometry.isBufferGeometry ) {
-
-			// we assume non-indexed geometry
-
-			if ( geometry.index === null ) {
-
-				const positionAttribute = geometry.attributes.position;
-				const lineDistances = [ 0 ];
-
-				for ( let i = 1, l = positionAttribute.count; i < l; i ++ ) {
-
-					_start$1.fromBufferAttribute( positionAttribute, i - 1 );
-					_end$1.fromBufferAttribute( positionAttribute, i );
-
-					lineDistances[ i ] = lineDistances[ i - 1 ];
-					lineDistances[ i ] += _start$1.distanceTo( _end$1 );
-
-				}
-
-				geometry.setAttribute( 'lineDistance', new Float32BufferAttribute( lineDistances, 1 ) );
-
-			} else {
-
-				console.warn( 'THREE.Line.computeLineDistances(): Computation only possible with non-indexed BufferGeometry.' );
-
-			}
-
-		} else if ( geometry.isGeometry ) {
-
-			console.error( 'THREE.Line.computeLineDistances() no longer supports THREE.Geometry. Use THREE.BufferGeometry instead.' );
-
-		}
-
-		return this;
-
-	}
-
-	raycast( raycaster, intersects ) {
-
-		const geometry = this.geometry;
-		const matrixWorld = this.matrixWorld;
-		const threshold = raycaster.params.Line.threshold;
-		const drawRange = geometry.drawRange;
-
-		// Checking boundingSphere distance to ray
-
-		if ( geometry.boundingSphere === null ) geometry.computeBoundingSphere();
-
-		_sphere$1.copy( geometry.boundingSphere );
-		_sphere$1.applyMatrix4( matrixWorld );
-		_sphere$1.radius += threshold;
-
-		if ( raycaster.ray.intersectsSphere( _sphere$1 ) === false ) return;
-
-		//
-
-		_inverseMatrix$1.copy( matrixWorld ).invert();
-		_ray$1.copy( raycaster.ray ).applyMatrix4( _inverseMatrix$1 );
-
-		const localThreshold = threshold / ( ( this.scale.x + this.scale.y + this.scale.z ) / 3 );
-		const localThresholdSq = localThreshold * localThreshold;
-
-		const vStart = new Vector3();
-		const vEnd = new Vector3();
-		const interSegment = new Vector3();
-		const interRay = new Vector3();
-		const step = this.isLineSegments ? 2 : 1;
-
-		if ( geometry.isBufferGeometry ) {
-
-			const index = geometry.index;
-			const attributes = geometry.attributes;
-			const positionAttribute = attributes.position;
-
-			if ( index !== null ) {
-
-				const start = Math.max( 0, drawRange.start );
-				const end = Math.min( index.count, ( drawRange.start + drawRange.count ) );
-
-				for ( let i = start, l = end - 1; i < l; i += step ) {
-
-					const a = index.getX( i );
-					const b = index.getX( i + 1 );
-
-					vStart.fromBufferAttribute( positionAttribute, a );
-					vEnd.fromBufferAttribute( positionAttribute, b );
-
-					const distSq = _ray$1.distanceSqToSegment( vStart, vEnd, interRay, interSegment );
-
-					if ( distSq > localThresholdSq ) continue;
-
-					interRay.applyMatrix4( this.matrixWorld ); //Move back to world space for distance calculation
-
-					const distance = raycaster.ray.origin.distanceTo( interRay );
-
-					if ( distance < raycaster.near || distance > raycaster.far ) continue;
-
-					intersects.push( {
-
-						distance: distance,
-						// What do we want? intersection point on the ray or on the segment??
-						// point: raycaster.ray.at( distance ),
-						point: interSegment.clone().applyMatrix4( this.matrixWorld ),
-						index: i,
-						face: null,
-						faceIndex: null,
-						object: this
-
-					} );
-
-				}
-
-			} else {
-
-				const start = Math.max( 0, drawRange.start );
-				const end = Math.min( positionAttribute.count, ( drawRange.start + drawRange.count ) );
-
-				for ( let i = start, l = end - 1; i < l; i += step ) {
-
-					vStart.fromBufferAttribute( positionAttribute, i );
-					vEnd.fromBufferAttribute( positionAttribute, i + 1 );
-
-					const distSq = _ray$1.distanceSqToSegment( vStart, vEnd, interRay, interSegment );
-
-					if ( distSq > localThresholdSq ) continue;
-
-					interRay.applyMatrix4( this.matrixWorld ); //Move back to world space for distance calculation
-
-					const distance = raycaster.ray.origin.distanceTo( interRay );
-
-					if ( distance < raycaster.near || distance > raycaster.far ) continue;
-
-					intersects.push( {
-
-						distance: distance,
-						// What do we want? intersection point on the ray or on the segment??
-						// point: raycaster.ray.at( distance ),
-						point: interSegment.clone().applyMatrix4( this.matrixWorld ),
-						index: i,
-						face: null,
-						faceIndex: null,
-						object: this
-
-					} );
-
-				}
-
-			}
-
-		} else if ( geometry.isGeometry ) {
-
-			console.error( 'THREE.Line.raycast() no longer supports THREE.Geometry. Use THREE.BufferGeometry instead.' );
-
-		}
-
-	}
-
-	updateMorphTargets() {
-
-		const geometry = this.geometry;
-
-		if ( geometry.isBufferGeometry ) {
-
-			const morphAttributes = geometry.morphAttributes;
-			const keys = Object.keys( morphAttributes );
-
-			if ( keys.length > 0 ) {
-
-				const morphAttribute = morphAttributes[ keys[ 0 ] ];
-
-				if ( morphAttribute !== undefined ) {
-
-					this.morphTargetInfluences = [];
-					this.morphTargetDictionary = {};
-
-					for ( let m = 0, ml = morphAttribute.length; m < ml; m ++ ) {
-
-						const name = morphAttribute[ m ].name || String( m );
-
-						this.morphTargetInfluences.push( 0 );
-						this.morphTargetDictionary[ name ] = m;
-
-					}
-
-				}
-
-			}
-
-		} else {
-
-			const morphTargets = geometry.morphTargets;
-
-			if ( morphTargets !== undefined && morphTargets.length > 0 ) {
-
-				console.error( 'THREE.Line.updateMorphTargets() does not support THREE.Geometry. Use THREE.BufferGeometry instead.' );
-
-			}
-
-		}
-
-	}
-
-}
-
-Line.prototype.isLine = true;
-
-const _start = /*@__PURE__*/ new Vector3();
-const _end = /*@__PURE__*/ new Vector3();
-
-class LineSegments extends Line {
-
-	constructor( geometry, material ) {
-
-		super( geometry, material );
-
-		this.type = 'LineSegments';
-
-	}
-
-	computeLineDistances() {
-
-		const geometry = this.geometry;
-
-		if ( geometry.isBufferGeometry ) {
-
-			// we assume non-indexed geometry
-
-			if ( geometry.index === null ) {
-
-				const positionAttribute = geometry.attributes.position;
-				const lineDistances = [];
-
-				for ( let i = 0, l = positionAttribute.count; i < l; i += 2 ) {
-
-					_start.fromBufferAttribute( positionAttribute, i );
-					_end.fromBufferAttribute( positionAttribute, i + 1 );
-
-					lineDistances[ i ] = ( i === 0 ) ? 0 : lineDistances[ i - 1 ];
-					lineDistances[ i + 1 ] = lineDistances[ i ] + _start.distanceTo( _end );
-
-				}
-
-				geometry.setAttribute( 'lineDistance', new Float32BufferAttribute( lineDistances, 1 ) );
-
-			} else {
-
-				console.warn( 'THREE.LineSegments.computeLineDistances(): Computation only possible with non-indexed BufferGeometry.' );
-
-			}
-
-		} else if ( geometry.isGeometry ) {
-
-			console.error( 'THREE.LineSegments.computeLineDistances() no longer supports THREE.Geometry. Use THREE.BufferGeometry instead.' );
-
-		}
-
-		return this;
-
-	}
-
-}
-
-LineSegments.prototype.isLineSegments = true;
+MeshNormalMaterial.prototype.isMeshNormalMaterial = true;
 
 const Cache = {
 
@@ -26155,66 +26087,6 @@ const _wordCharOrDot = '[^' + _RESERVED_CHARS_RE.replace( '\\.', '' ) + ']';
 // Property and accessor. May not contain reserved characters. Accessor may
 // contain any non-bracket characters.
 /\.(WC+)(?:\[(.+)\])?/.source.replace( 'WC', _wordChar );
-
-class AxesHelper extends LineSegments {
-
-	constructor( size = 1 ) {
-
-		const vertices = [
-			0, 0, 0,	size, 0, 0,
-			0, 0, 0,	0, size, 0,
-			0, 0, 0,	0, 0, size
-		];
-
-		const colors = [
-			1, 0, 0,	1, 0.6, 0,
-			0, 1, 0,	0.6, 1, 0,
-			0, 0, 1,	0, 0.6, 1
-		];
-
-		const geometry = new BufferGeometry();
-		geometry.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
-		geometry.setAttribute( 'color', new Float32BufferAttribute( colors, 3 ) );
-
-		const material = new LineBasicMaterial( { vertexColors: true, toneMapped: false } );
-
-		super( geometry, material );
-
-		this.type = 'AxesHelper';
-
-	}
-
-	setColors( xAxisColor, yAxisColor, zAxisColor ) {
-
-		const color = new Color();
-		const array = this.geometry.attributes.color.array;
-
-		color.set( xAxisColor );
-		color.toArray( array, 0 );
-		color.toArray( array, 3 );
-
-		color.set( yAxisColor );
-		color.toArray( array, 6 );
-		color.toArray( array, 9 );
-
-		color.set( zAxisColor );
-		color.toArray( array, 12 );
-		color.toArray( array, 15 );
-
-		this.geometry.attributes.color.needsUpdate = true;
-
-		return this;
-
-	}
-
-	dispose() {
-
-		this.geometry.dispose();
-		this.material.dispose();
-
-	}
-
-}
 
 const backgroundMaterial = new MeshBasicMaterial( {
 	side: BackSide,
@@ -27742,7 +27614,7 @@ const DEFAULT_ID = "__googleMapsScriptId";
  *   libraries: ["places"]
  * });
  *
- * loader.load().then(() => {
+ * loader.load().then((google) => {
  *   const map = new google.maps.Map(...)
  * })
  * ```
@@ -27850,7 +27722,7 @@ class Loader {
         return new Promise((resolve, reject) => {
             this.loadCallback((err) => {
                 if (!err) {
-                    resolve();
+                    resolve(window.google);
                 }
                 else {
                     reject(err);
@@ -27957,4 +27829,4 @@ class Loader {
     }
 }
 
-export { AxesHelper as A, Loader as L, PerspectiveCamera as P, Scene as S, WebGLRenderer as W, PCFSoftShadowMap as a, sRGBEncoding as s };
+export { BoxGeometry as B, Loader as L, MathUtils as M, PerspectiveCamera as P, Scene as S, Vector3 as V, WebGLRenderer as W, PCFSoftShadowMap as a, Mesh as b, MeshNormalMaterial as c, sRGBEncoding as s };

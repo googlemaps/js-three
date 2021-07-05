@@ -27742,7 +27742,7 @@ const DEFAULT_ID = "__googleMapsScriptId";
  *   libraries: ["places"]
  * });
  *
- * loader.load().then(() => {
+ * loader.load().then((google) => {
  *   const map = new google.maps.Map(...)
  * })
  * ```
@@ -27850,7 +27850,7 @@ class Loader {
         return new Promise((resolve, reject) => {
             this.loadCallback((err) => {
                 if (!err) {
-                    resolve();
+                    resolve(window.google);
                 }
                 else {
                     reject(err);
