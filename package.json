@@ -77,6 +77,6 @@
     "registry": "https://wombat-dressing-room.appspot.com"
   },
   "dependencies": {
-    "three": "^0.128.0"
+    "three": "^0.130.0"
   }
 }
