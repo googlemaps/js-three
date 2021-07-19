@@ -46,6 +46,10 @@ test.each([
     { lng: -90, lat: -45 },
     { x: -10007559.105973555, y: -5615239.936637378 },
   ],
+  [
+    { lng: 151.2093, lat: -33.8688 },
+    { x: 16813733.4125, y: -4006716.49009 },
+  ],
   [new LatLng({ lng: 0, lat: 0 }), { x: 0, y: 0 }],
 ])("latLngToMeters is correct", (latLng, expected) => {
   const { x, y } = latLngToMeters(latLng);
