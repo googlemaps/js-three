@@ -20082,13 +20082,13 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 
 	}
 
-	function generateMipmap( target, texture, width, height, depth = 1 ) {
+	function generateMipmap( target, texture, width, height ) {
 
 		_gl.generateMipmap( target );
 
 		const textureProperties = properties.get( texture );
 
-		textureProperties.__maxMipLevel = Math.log2( Math.max( width, height, depth ) );
+		textureProperties.__maxMipLevel = Math.log2( Math.max( width, height ) );
 
 	}
 
@@ -21190,11 +21190,11 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 
 			if ( textureNeedsGenerateMipmaps( texture, supportsMips ) ) {
 
-				generateMipmap( glTextureType, texture, renderTarget.width, renderTarget.height, renderTarget.depth );
+				generateMipmap( 3553, texture, renderTarget.width, renderTarget.height );
 
 			}
 
-			state.bindTexture( glTextureType, null );
+			state.bindTexture( 3553, null );
 
 		}
 
@@ -22355,7 +22355,7 @@ class WebXRManager extends EventDispatcher {
 
 						const glSubImage = glBinding.getViewSubImage( glProjLayer, view );
 
-						state.bindXRFramebuffer( glFramebuffer );
+						gl.bindFramebuffer( 36160, glFramebuffer );
 
 						gl.framebufferTexture2D( 36160, 36064, 3553, glSubImage.colorTexture, 0 );
 
@@ -22364,6 +22364,10 @@ class WebXRManager extends EventDispatcher {
 							gl.framebufferTexture2D( 36160, 36096, 3553, glSubImage.depthStencilTexture, 0 );
 
 						}
+
+						gl.bindFramebuffer( 36160, null );
+
+						state.bindXRFramebuffer( glFramebuffer );
 
 						viewport = glSubImage.viewport;
 
