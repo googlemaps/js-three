@@ -50,7 +50,7 @@
     "@types/selenium-webdriver": "^4.0.14",
     "@types/stats.js": "^0.17.0",
     "@types/three": "^0.131.0",
-    "@typescript-eslint/eslint-plugin": ">=4.29.0",
+    "@typescript-eslint/eslint-plugin": ">=4.31.0",
     "@typescript-eslint/parser": ">=4.30.0",
     "chromedriver": "^93.0.1",
     "core-js": "^3.16.4",
