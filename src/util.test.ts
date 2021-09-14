@@ -74,6 +74,10 @@ test.each([
     { lng: -90, lat: -45 },
     { x: -10007559.105973555, y: -5615239.936637378 },
   ],
+  [
+    { lng: 0, lat: -1 },
+    { x: 0, y: -111200.74693490694 },
+  ],
 ])("latLngToVector3 is correct", (latLng, projected) => {
   const vector = latLngToVector3(latLng);
   expect(vector.x).toBeCloseTo(projected.x);
@@ -81,13 +85,55 @@ test.each([
   expect(vector.z).toBeCloseTo(-projected.y);
 });
 
-test("latLngToVector3Relative is correct", () => {
-  const relative = latLngToVector3Relative(
-    { lat: 0, lng: 0 },
-    { lat: 1, lng: 1 }
-  );
-
-  expect(relative.x).toBeCloseTo(-111195.10117748393);
-  expect(relative.y).toBeCloseTo(0);
-  expect(relative.z).toBeCloseTo(-111200.74693490766);
-});
+test.each([
+  // 0 same
+  {
+    latLng: { lat: 0, lng: 0 },
+    reference: { lat: 0, lng: 0 },
+    relative: { x: 0, y: 0 },
+  },
+  // 1 northwest of reference
+  {
+    latLng: { lat: 0, lng: 0 },
+    reference: { lat: -1, lng: 1 },
+    relative: {
+      x: -111195.10117748393,
+      y: 111200.74693490694,
+    },
+  },
+  // 2 northeast of reference
+  {
+    latLng: { lat: 0, lng: 2 },
+    reference: { lat: -1, lng: 1 },
+    relative: {
+      x: 111195.10117748393,
+      y: 111200.74693490694,
+    },
+  },
+  // 3 southeast of reference
+  {
+    latLng: { lat: -2, lng: 2 },
+    reference: { lat: -1, lng: 1 },
+    relative: {
+      x: 111195.10117748393,
+      y: -111234.63180200469,
+    },
+  },
+  // 4 southwest of reference
+  {
+    latLng: { lat: -2, lng: 0 },
+    reference: { lat: -1, lng: 1 },
+    relative: {
+      x: -111195.10117748393,
+      y: -111234.63180200469,
+    },
+  },
+])(
+  "latLngToVector3Relative is correct: %# %j",
+  ({ latLng, reference, relative }) => {
+    const vector = latLngToVector3Relative(latLng, reference);
+    expect(vector.x).toBeCloseTo(relative.x);
+    expect(vector.y).toBeCloseTo(0);
+    expect(vector.z).toBeCloseTo(-relative.y);
+  }
+);
