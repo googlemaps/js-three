@@ -156,9 +156,9 @@ function latLngToVector3(point, target = new Vector3()) {
 function latLngToVector3Relative(point, reference, target = new Vector3()) {
     const p = latLngToVector3(point);
     const r = latLngToVector3(reference);
-    target.setX((r.x - p.x) * Math.sign(p.x - r.x));
-    target.setY((r.y - p.y) * Math.sign(p.y - r.y));
-    target.setZ((r.z - p.z) * Math.sign(p.z - r.z));
+    target.setX(Math.abs(r.x - p.x) * Math.sign(p.x - r.x));
+    target.setY(Math.abs(r.y - p.y) * Math.sign(p.y - r.y));
+    target.setZ(Math.abs(r.z - p.z) * Math.sign(p.z - r.z));
     return target;
 }
 
