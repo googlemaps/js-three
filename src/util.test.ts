@@ -128,9 +128,12 @@ test.each([
       y: -111234.63180200469,
     },
   },
-])("latLngToVector3Relative is correct: %# %j", ({latLng, reference, relative}) => {
-  const vector = latLngToVector3Relative(latLng, reference);
-  expect(vector.x).toBeCloseTo(relative.x);
-  expect(vector.y).toBeCloseTo(0);
-  expect(vector.z).toBeCloseTo(-relative.y);
-});
+])(
+  "latLngToVector3Relative is correct: %# %j",
+  ({ latLng, reference, relative }) => {
+    const vector = latLngToVector3Relative(latLng, reference);
+    expect(vector.x).toBeCloseTo(relative.x);
+    expect(vector.y).toBeCloseTo(0);
+    expect(vector.z).toBeCloseTo(-relative.y);
+  }
+);
