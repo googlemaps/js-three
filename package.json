@@ -26,8 +26,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "docs": "typedoc src/index.ts && npm run build:examples && cp -r dist docs/dist && cp -r public docs/public",
-    "format": "prettier *.json *.js e2e/* --write && eslint src/* --fix",
-    "lint": "eslint src/*",
+    "format": "eslint . --fix",
+    "lint": "eslint .",
     "prepare": "rm -rf dist && rollup -c",
     "test": "jest src/*",
     "test:e2e": "jest --passWithNoTests e2e/*",

@@ -46,7 +46,7 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   // Create a box mesh
   const box = new Mesh(
     new BoxBufferGeometry(10, 50, 10),
-    new MeshNormalMaterial(),
+    new MeshNormalMaterial()
   );
 
   // set position at center of map
