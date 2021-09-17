@@ -25,13 +25,12 @@
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "docs": "typedoc src/index.ts",
+    "docs": "typedoc src/index.ts && cp -r dist docs/dist && cp -r examples docs/examples",
     "format": "prettier *.json *.js e2e/* --write && eslint src/* --fix",
     "lint": "eslint src/*",
-    "prepare": "rollup -c",
+    "prepare": "rm -rf dist && rollup -c",
     "test": "jest src/*",
     "test:e2e": "jest --passWithNoTests e2e/*",
-    "build": "rm -rf dist && rollup -c && npm run build:examples",
     "build:examples": "rm -rf public && rollup -c rollup.config.examples.js",
     "start": "rollup -c rollup.config.examples.js -w"
   },
