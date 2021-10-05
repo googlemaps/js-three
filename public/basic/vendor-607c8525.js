@@ -16078,7 +16078,6 @@ function WebGLExtensions( gl ) {
 
 			getExtension( 'OES_texture_float_linear' );
 			getExtension( 'EXT_color_buffer_half_float' );
-			getExtension( 'EXT_multisampled_render_to_texture' );
 
 		},
 
@@ -23549,8 +23548,6 @@ class WebXRManager extends EventDispatcher {
 		let xrFrame = null;
 		let depthStyle = null;
 		let clearStyle = null;
-		const msaartcSupported = renderer.extensions.has( 'EXT_multisampled_render_to_texture' );
-		let msaaExt = null;
 
 		const controllers = [];
 		const inputSourcesMap = new Map();
@@ -23820,11 +23817,7 @@ class WebXRManager extends EventDispatcher {
 
 					session.updateRenderState( { layers: [ glProjLayer ] } );
 
-					if ( isMultisample && msaartcSupported ) {
-
-						msaaExt = renderer.extensions.get( 'EXT_multisampled_render_to_texture' );
-
-					} else if ( isMultisample ) {
+					if ( isMultisample ) {
 
 						glMultisampledFramebuffer = gl.createFramebuffer();
 						glColorRenderbuffer = gl.createRenderbuffer();
@@ -24145,27 +24138,13 @@ class WebXRManager extends EventDispatcher {
 
 						state.bindXRFramebuffer( glFramebuffer );
 
-						if ( isMultisample && msaartcSupported ) {
+						if ( glSubImage.depthStencilTexture !== undefined ) {
 
-							if ( glSubImage.depthStencilTexture !== undefined ) {
-
-								msaaExt.framebufferTexture2DMultisampleEXT( 36160, depthStyle, 3553, glSubImage.depthStencilTexture, 0, 4 );
-
-							}
-
-							msaaExt.framebufferTexture2DMultisampleEXT( 36160, 36064, 3553, glSubImage.colorTexture, 0, 4 );
-
-						} else {
-
-							if ( glSubImage.depthStencilTexture !== undefined ) {
-
-								gl.framebufferTexture2D( 36160, depthStyle, 3553, glSubImage.depthStencilTexture, 0 );
-
-							}
-
-							gl.framebufferTexture2D( 36160, 36064, 3553, glSubImage.colorTexture, 0 );
+							gl.framebufferTexture2D( 36160, depthStyle, 3553, glSubImage.depthStencilTexture, 0 );
 
 						}
+
+						gl.framebufferTexture2D( 36160, 36064, 3553, glSubImage.colorTexture, 0 );
 
 						viewport = glSubImage.viewport;
 
@@ -24191,7 +24170,7 @@ class WebXRManager extends EventDispatcher {
 
 				}
 
-				if ( isMultisample && ! msaartcSupported ) {
+				if ( isMultisample ) {
 
 					state.bindXRFramebuffer( glMultisampledFramebuffer );
 
@@ -24216,7 +24195,7 @@ class WebXRManager extends EventDispatcher {
 
 			if ( onAnimationFrameCallback ) onAnimationFrameCallback( time, frame );
 
-			if ( isMultisample && ! msaartcSupported ) {
+			if ( isMultisample ) {
 
 				const width = glProjLayer.textureWidth;
 				const height = glProjLayer.textureHeight;
@@ -25724,7 +25703,7 @@ function WebGLRenderer( parameters = {} ) {
 
 		const frontFaceCW = ( object.isMesh && object.matrixWorld.determinant() < 0 );
 
-		const program = setProgram( camera, scene, material, object );
+		const program = setProgram( camera, scene, geometry, material, object );
 
 		state.setMaterial( material, frontFaceCW );
 
@@ -25753,12 +25732,6 @@ function WebGLRenderer( parameters = {} ) {
 
 			index = geometries.getWireframeAttribute( geometry );
 			rangeFactor = 2;
-
-		}
-
-		if ( geometry.morphAttributes.position !== undefined || geometry.morphAttributes.normal !== undefined ) {
-
-			morphtargets.update( object, geometry, material, program );
 
 		}
 
@@ -26326,7 +26299,7 @@ function WebGLRenderer( parameters = {} ) {
 
 		if ( object.isImmediateRenderObject ) {
 
-			const program = setProgram( camera, scene, material, object );
+			const program = setProgram( camera, scene, geometry, material, object );
 
 			state.setMaterial( material );
 
@@ -26491,7 +26464,7 @@ function WebGLRenderer( parameters = {} ) {
 
 	}
 
-	function setProgram( camera, scene, material, object ) {
+	function setProgram( camera, scene, geometry, material, object ) {
 
 		if ( scene.isScene !== true ) scene = _emptyScene; // scene could be a Mesh, Line, Points, ...
 
@@ -26501,11 +26474,11 @@ function WebGLRenderer( parameters = {} ) {
 		const environment = material.isMeshStandardMaterial ? scene.environment : null;
 		const encoding = ( _currentRenderTarget === null ) ? _this.outputEncoding : _currentRenderTarget.texture.encoding;
 		const envMap = ( material.isMeshStandardMaterial ? cubeuvmaps : cubemaps ).get( material.envMap || environment );
-		const vertexAlphas = material.vertexColors === true && !! object.geometry && !! object.geometry.attributes.color && object.geometry.attributes.color.itemSize === 4;
-		const vertexTangents = !! material.normalMap && !! object.geometry && !! object.geometry.attributes.tangent;
-		const morphTargets = !! object.geometry && !! object.geometry.morphAttributes.position;
-		const morphNormals = !! object.geometry && !! object.geometry.morphAttributes.normal;
-		const morphTargetsCount = ( !! object.geometry && !! object.geometry.morphAttributes.position ) ? object.geometry.morphAttributes.position.length : 0;
+		const vertexAlphas = material.vertexColors === true && !! geometry && !! geometry.attributes.color && geometry.attributes.color.itemSize === 4;
+		const vertexTangents = !! material.normalMap && !! geometry && !! geometry.attributes.tangent;
+		const morphTargets = !! geometry && !! geometry.morphAttributes.position;
+		const morphNormals = !! geometry && !! geometry.morphAttributes.normal;
+		const morphTargetsCount = ( !! geometry && !! geometry.morphAttributes.position ) ? geometry.morphAttributes.position.length : 0;
 
 		const materialProperties = properties.get( material );
 		const lights = currentRenderState.state.lights;
@@ -26703,9 +26676,9 @@ function WebGLRenderer( parameters = {} ) {
 
 		}
 
-		// skinning uniforms must be set even if material didn't change
-		// auto-setting of texture unit for bone texture must go before other textures
-		// otherwise textures used for skinning can take over texture units reserved for other material textures
+		// skinning and morph target uniforms must be set even if material didn't change
+		// auto-setting of texture unit for bone and morph texture must go before other textures
+		// otherwise textures used for skinning and morphing can take over texture units reserved for other material textures
 
 		if ( object.isSkinnedMesh ) {
 
@@ -26732,6 +26705,13 @@ function WebGLRenderer( parameters = {} ) {
 			}
 
 		}
+
+		if ( !! geometry && ( geometry.morphAttributes.position !== undefined || geometry.morphAttributes.normal !== undefined ) ) {
+
+			morphtargets.update( object, geometry, material, program );
+
+		}
+
 
 		if ( refreshMaterial || materialProperties.receiveShadow !== object.receiveShadow ) {
 
