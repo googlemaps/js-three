@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { AxesHelper, Scene } from "three";
-import { LOADER_OPTIONS, MAP_ID } from "./config";
-import { ThreeJSOverlayView, WORLD_SIZE } from "../src";
+import {AxesHelper, Scene} from 'three';
+import {LOADER_OPTIONS, MAP_ID} from './config';
+import {ThreeJSOverlayView, WORLD_SIZE} from '../src';
 
-import { Loader } from "@googlemaps/js-api-loader";
+import {Loader} from '@googlemaps/js-api-loader';
 
 const mapOptions = {
   center: {
@@ -32,14 +32,14 @@ const mapOptions = {
 };
 
 new Loader(LOADER_OPTIONS).load().then(() => {
-  const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  const map = new google.maps.Map(document.getElementById('map'), mapOptions);
   const scene = new Scene();
 
   scene.add(new AxesHelper(WORLD_SIZE));
 
   // add ThreeJS Overlay view anchored to center of map
   new ThreeJSOverlayView({
-    anchor: { ...mapOptions.center, altitude: 0 },
+    anchor: {...mapOptions.center, altitude: 0},
     scene,
     map,
   });

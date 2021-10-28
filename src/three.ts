@@ -20,7 +20,7 @@ import {
   Scene,
   WebGLRenderer,
   sRGBEncoding,
-} from "three";
+} from 'three';
 
 export interface LatLngAltitudeLiteral extends google.maps.LatLngLiteral {
   altitude: number;
@@ -62,7 +62,7 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
   protected renderer: WebGLRenderer;
 
   constructor({
-    anchor = { lat: 0, lng: 0, altitude: 0 },
+    anchor = {lat: 0, lng: 0, altitude: 0},
     rotation = new Float32Array([0, 0, 0]),
     scale = new Float32Array([1, 1, 1]),
     scene = new Scene(),
@@ -163,7 +163,7 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
     // https://discourse.threejs.org/t/linearencoding-vs-srgbencoding/23243
     this.renderer.outputEncoding = sRGBEncoding;
 
-    const { width, height, clientWidth } = gl.canvas as HTMLCanvasElement;
+    const {width, height, clientWidth} = gl.canvas as HTMLCanvasElement;
 
     this.renderer.setPixelRatio(width / clientWidth);
     this.renderer.setSize(width, height, false);
@@ -182,11 +182,11 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
     gl: WebGLRenderingContext,
     transformer: google.maps.CoordinateTransformer
   ): void {
-    const { lat, lng, altitude } = this.anchor;
+    const {lat, lng, altitude} = this.anchor;
 
     this.camera.projectionMatrix.fromArray(
       transformer.fromLatLngAltitude(
-        { lat, lng },
+        {lat, lng},
         altitude,
         this.rotation,
         this.scale

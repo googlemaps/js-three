@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Map, initialize } from "@googlemaps/jest-mocks";
-import { PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import {Map, initialize} from '@googlemaps/jest-mocks';
+import {PerspectiveCamera, Scene, WebGLRenderer} from 'three';
 
-import { ThreeJSOverlayView } from "./three";
+import {ThreeJSOverlayView} from './three';
 
 beforeEach(() => {
   initialize();
@@ -33,26 +33,26 @@ beforeEach(() => {
   });
 });
 
-test("instantiates with defaults", () => {
+test('instantiates with defaults', () => {
   const overlay = new ThreeJSOverlayView({});
 
-  expect(overlay["overlay"]).toBeDefined();
-  expect(overlay["camera"]).toBeInstanceOf(PerspectiveCamera);
+  expect(overlay['overlay']).toBeDefined();
+  expect(overlay['camera']).toBeInstanceOf(PerspectiveCamera);
 
   expect(overlay.scene).toBeInstanceOf(Scene);
   expect(overlay.scene.rotation.x).toEqual(Math.PI / 2);
 
   // required hooks must be defined
-  expect(overlay["overlay"].onAdd).toBeDefined();
-  expect(overlay["overlay"].onRemove).toBeDefined();
-  expect(overlay["overlay"].onContextLost).toBeDefined();
-  expect(overlay["overlay"].onContextRestored).toBeDefined();
-  expect(overlay["overlay"].onDraw).toBeDefined();
+  expect(overlay['overlay'].onAdd).toBeDefined();
+  expect(overlay['overlay'].onRemove).toBeDefined();
+  expect(overlay['overlay'].onContextLost).toBeDefined();
+  expect(overlay['overlay'].onContextRestored).toBeDefined();
+  expect(overlay['overlay'].onDraw).toBeDefined();
 });
 
-test("instantiates with map and calls setMap", () => {
+test('instantiates with map and calls setMap', () => {
   const map = new Map(
-    document.createElement("div"),
+    document.createElement('div'),
     {}
   ) as unknown as google.maps.Map;
 
@@ -60,58 +60,58 @@ test("instantiates with map and calls setMap", () => {
     map,
   });
 
-  expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
+  expect(overlay['overlay'].setMap).toHaveBeenCalledWith(map);
 });
 
-test("setMap is called on overlay", () => {
+test('setMap is called on overlay', () => {
   const map = new Map(
-    document.createElement("div"),
+    document.createElement('div'),
     {}
   ) as unknown as google.maps.Map;
   const overlay = new ThreeJSOverlayView({});
   overlay.setMap(map);
 
-  expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
+  expect(overlay['overlay'].setMap).toHaveBeenCalledWith(map);
 });
 
-test("onContext lost disposes of renderer", () => {
+test('onContext lost disposes of renderer', () => {
   const overlay = new ThreeJSOverlayView({});
 
   overlay.onContextLost(); // noop
-  expect(overlay["renderer"]).toBeNull();
+  expect(overlay['renderer']).toBeNull();
 
   const dispose = jest.fn();
-  overlay["renderer"] = {
+  overlay['renderer'] = {
     dispose,
   } as unknown as WebGLRenderer;
 
   overlay.onContextLost();
 
   expect(dispose).toHaveBeenCalled();
-  expect(overlay["renderer"]).toBeNull();
+  expect(overlay['renderer']).toBeNull();
 });
 
-test("getMap is called on overlay", () => {
+test('getMap is called on overlay', () => {
   const overlay = new ThreeJSOverlayView({});
   overlay.getMap();
 
-  expect(overlay["overlay"].getMap).toHaveBeenCalledWith();
+  expect(overlay['overlay'].getMap).toHaveBeenCalledWith();
 });
 
-test("requestRedraw is called on overlay", () => {
+test('requestRedraw is called on overlay', () => {
   const overlay = new ThreeJSOverlayView({});
   overlay.requestRedraw();
 
-  expect(overlay["overlay"].requestRedraw).toHaveBeenCalledWith();
+  expect(overlay['overlay'].requestRedraw).toHaveBeenCalledWith();
 });
 
-test("addListener is called on overlay", () => {
+test('addListener is called on overlay', () => {
   const overlay = new ThreeJSOverlayView({});
   const handler = () => {};
-  const eventName = "foo";
+  const eventName = 'foo';
 
   expect(overlay.addListener(eventName, handler)).toBeDefined();
-  expect(overlay["overlay"].addListener).toHaveBeenCalledWith(
+  expect(overlay['overlay'].addListener).toHaveBeenCalledWith(
     eventName,
     handler
   );

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { LoaderOptions } from "@googlemaps/js-api-loader";
+import {LoaderOptions} from '@googlemaps/js-api-loader';
 
-export const MAP_ID = "7b9a897acd0a63a4";
+export const MAP_ID = '7b9a897acd0a63a4';
 
 export const LOADER_OPTIONS: LoaderOptions = {
-  apiKey: "AIzaSyD8xiaVPWB02OeQkJOenLiJzdeUHzlhu00",
-  version: "beta",
+  apiKey: 'AIzaSyD8xiaVPWB02OeQkJOenLiJzdeUHzlhu00',
+  version: 'beta',
   libraries: [],
 };

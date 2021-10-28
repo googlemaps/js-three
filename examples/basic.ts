@@ -20,11 +20,11 @@ import {
   Mesh,
   MeshNormalMaterial,
   Scene,
-} from "three";
-import { LOADER_OPTIONS, MAP_ID } from "./config";
-import { ThreeJSOverlayView, latLngToVector3 } from "../src";
+} from 'three';
+import {LOADER_OPTIONS, MAP_ID} from './config';
+import {ThreeJSOverlayView, latLngToVector3} from '../src';
 
-import { Loader } from "@googlemaps/js-api-loader";
+import {Loader} from '@googlemaps/js-api-loader';
 
 const mapOptions = {
   center: {
@@ -39,7 +39,7 @@ const mapOptions = {
 
 new Loader(LOADER_OPTIONS).load().then(() => {
   // instantiate the map
-  const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  const map = new google.maps.Map(document.getElementById('map'), mapOptions);
   // instantiate a ThreeJS Scene
   const scene = new Scene();
 

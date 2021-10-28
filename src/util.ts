@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MathUtils, Vector3 } from "three";
+import {MathUtils, Vector3} from 'three';
 
 export const EARTH_RADIUS = 6371010;
 export const WORLD_SIZE = Math.PI * EARTH_RADIUS;
@@ -46,7 +46,7 @@ export function latLngToMeters(
       Math.log(
         Math.tan(0.5 * (Math.PI * 0.5 - MathUtils.degToRad(latLng.lat)))
       );
-  return { x, y };
+  return {x, y};
 }
 
 /**
@@ -56,7 +56,7 @@ export function latLngToVector3(
   point: google.maps.LatLngLiteral | google.maps.LatLng,
   target = new Vector3()
 ) {
-  const { x, y } = latLngToMeters(point);
+  const {x, y} = latLngToMeters(point);
 
   return target.set(x, 0, -y);
 }
