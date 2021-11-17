@@ -68,8 +68,7 @@ const template = ({ attributes, files, meta, publicPath, title }) => {
 };
 
 const typescriptOptions = {
-  ...{ declaration: false, noEmit: true },
-  include: ["src/**/*", "examples/**/*"],
+  tsconfig: "tsconfig.examples.json",
 };
 
 const examples = fs
