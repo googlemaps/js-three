@@ -16,12 +16,12 @@
 
 import html, { makeHtmlAttributes } from "@rollup/plugin-html";
 
-import commonjs from "rollup-plugin-commonjs";
+import commonjs from "@rollup/plugin-commonjs";
 import fs from "fs";
 import jsonNodeResolve from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import path from "path";
-import typescript from "rollup-plugin-typescript2";
+import typescript from "@rollup/plugin-typescript";
 
 const template = ({ attributes, files, meta, publicPath, title }) => {
   const scripts = (files.js || [])
@@ -68,10 +68,7 @@ const template = ({ attributes, files, meta, publicPath, title }) => {
 };
 
 const typescriptOptions = {
-  tsconfigOverride: {
-    compilerOptions: { declaration: false, noEmit: true },
-    include: ["src/**/*", "examples/**/*"],
-  },
+  tsconfig: "tsconfig.examples.json",
 };
 
 const examples = fs
