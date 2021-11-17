@@ -68,7 +68,7 @@ const template = ({ attributes, files, meta, publicPath, title }) => {
 };
 
 const typescriptOptions = {
-  compilerOptions: { declaration: false, noEmit: true },
+  ...{ declaration: false, noEmit: true },
   include: ["src/**/*", "examples/**/*"],
 };
 
