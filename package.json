@@ -50,7 +50,7 @@
     "@rollup/plugin-typescript": "^8.3.0",
     "@types/d3-random": "^3.0.1",
     "@types/google.maps": "^3.46.1",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "@types/proj4": "^2.5.2",
     "@types/selenium-webdriver": "^4.0.16",
     "@types/stats.js": "^0.17.0",
