@@ -1,4 +1,4 @@
-import { S as Scene, P as PerspectiveCamera, W as WebGLRenderer, a as PCFSoftShadowMap, s as sRGBEncoding, L as Loader, A as AxesHelper } from './vendor-964a15f2.js';
+import { S as Scene, P as PerspectiveCamera, W as WebGLRenderer, a as PCFSoftShadowMap, s as sRGBEncoding, L as Loader, A as AxesHelper } from './vendor-dc4ebc5f.js';
 
 /**
  * Copyright 2021 Google LLC
