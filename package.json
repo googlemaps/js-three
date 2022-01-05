@@ -54,7 +54,7 @@
     "@types/proj4": "^2.5.2",
     "@types/selenium-webdriver": "^4.0.16",
     "@types/stats.js": "^0.17.0",
-    "@types/three": "^0.136.0",
+    "@types/three": "^0.136.1",
     "@typescript-eslint/eslint-plugin": ">=4.33.0",
     "@typescript-eslint/parser": ">=4.33.0",
     "chromedriver": "^96.0.0",
