@@ -38,7 +38,7 @@
     "three": "^0.136.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-env": "^7.16.10",
     "@babel/runtime-corejs3": "^7.16.8",
     "@googlemaps/jest-mocks": "^2.2.0",
     "@googlemaps/js-api-loader": "^1.13.2",
