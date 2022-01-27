@@ -35,7 +35,7 @@
     "test:e2e": "jest --passWithNoTests e2e/*"
   },
   "dependencies": {
-    "three": "^0.136.0"
+    "three": "^0.137.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
