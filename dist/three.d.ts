@@ -31,12 +31,12 @@ export interface ThreeJSOverlayViewOptions {
     scene?: Scene;
 }
 /**
- * Add a [three.js](https://threejs.org) scene as a [Google Maps WebglOverlayView](http://goo.gle/webgloverlayview-ref).
+ * Add a [three.js](https://threejs.org) scene as a [Google Maps WebGLOverlayView](http://goo.gle/WebGLOverlayView-ref).
  *
  * **Note**: The scene will be rotated to a default up axis of (0, 1, 0) matching that of three.js.
  * *
  */
-export declare class ThreeJSOverlayView implements google.maps.WebglOverlayView {
+export declare class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     /**
      * See [[ThreeJSOverlayViewOptions.anchor]]
      */
@@ -48,9 +48,11 @@ export declare class ThreeJSOverlayView implements google.maps.WebglOverlayView 
     protected readonly camera: PerspectiveCamera;
     protected readonly scale: Float32Array;
     protected readonly rotation: Float32Array;
-    protected readonly overlay: google.maps.WebglOverlayView;
+    protected readonly overlay: google.maps.WebGLOverlayView;
     protected renderer: WebGLRenderer;
     constructor({ anchor, rotation, scale, scene, map, }: ThreeJSOverlayViewOptions);
+    onStateUpdate(options: google.maps.WebGLStateOptions): void;
+    requestStateUpdate(): void;
     onAdd(): void;
     onRemove(): void;
     getMap(): google.maps.Map;
@@ -64,7 +66,7 @@ export declare class ThreeJSOverlayView implements google.maps.WebglOverlayView 
     setValues(values?: object): void;
     unbind(key: string): void;
     unbindAll(): void;
-    onContextRestored(gl: WebGLRenderingContext): void;
+    onContextRestored({ gl }: google.maps.WebGLStateOptions): void;
     onContextLost(): void;
-    onDraw(gl: WebGLRenderingContext, transformer: google.maps.CoordinateTransformer): void;
+    onDraw({ gl, transformer }: google.maps.WebGLDrawOptions): void;
 }

@@ -38,14 +38,14 @@ const LOADER_OPTIONS = {
  * limitations under the License.
  */
 /**
- * Add a [three.js](https://threejs.org) scene as a [Google Maps WebglOverlayView](http://goo.gle/webgloverlayview-ref).
+ * Add a [three.js](https://threejs.org) scene as a [Google Maps WebGLOverlayView](http://goo.gle/WebGLOverlayView-ref).
  *
  * **Note**: The scene will be rotated to a default up axis of (0, 1, 0) matching that of three.js.
  * *
  */
 class ThreeJSOverlayView {
     constructor({ anchor = { lat: 0, lng: 0, altitude: 0 }, rotation = new Float32Array([0, 0, 0]), scale = new Float32Array([1, 1, 1]), scene = new Scene(), map, }) {
-        this.overlay = new google.maps.WebglOverlayView();
+        this.overlay = new google.maps.WebGLOverlayView();
         this.renderer = null;
         this.camera = null;
         this.anchor = anchor;
@@ -63,6 +63,12 @@ class ThreeJSOverlayView {
         if (map) {
             this.setMap(map);
         }
+    }
+    onStateUpdate(options) {
+        this.overlay.onStateUpdate(options);
+    }
+    requestStateUpdate() {
+        this.overlay.requestStateUpdate();
     }
     onAdd() { }
     onRemove() { }
@@ -99,7 +105,7 @@ class ThreeJSOverlayView {
     unbindAll() {
         this.overlay.unbindAll();
     }
-    onContextRestored(gl) {
+    onContextRestored({ gl }) {
         this.renderer = new WebGLRenderer(Object.assign({ canvas: gl.canvas, context: gl }, gl.getContextAttributes()));
         this.renderer.autoClear = false;
         this.renderer.autoClearDepth = false;
@@ -119,7 +125,7 @@ class ThreeJSOverlayView {
         this.renderer.dispose();
         this.renderer = null;
     }
-    onDraw(gl, transformer) {
+    onDraw({ gl, transformer }) {
         const { lat, lng, altitude } = this.anchor;
         this.camera.projectionMatrix.fromArray(transformer.fromLatLngAltitude({ lat, lng }, altitude, this.rotation, this.scale));
         gl.disable(gl.SCISSOR_TEST);
