@@ -21,7 +21,7 @@ import { ThreeJSOverlayView } from "./three";
 
 beforeEach(() => {
   initialize();
-  google.maps.WebglOverlayView = jest.fn().mockImplementation(() => {
+  google.maps.WebGLOverlayView = jest.fn().mockImplementation(() => {
     return {
       getMap: jest.fn(),
       setMap: jest.fn(),

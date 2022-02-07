@@ -11,9 +11,9 @@
 
 ## Description
 
-Add [three.js](https://threejs.org) objects to Google Maps Platform JS. The library provides a `ThreeJSOverlayView` class extending `google.maps.WebglOverlayView` and utility functions such as `latLngToMeters`, `latLngToVector3`, and `latLngToVector3Relative`, for converting latitude and longitude to vectors in the mercator coordinate space.
+Add [three.js](https://threejs.org) objects to Google Maps Platform JS. The library provides a `ThreeJSOverlayView` class extending `google.maps.WebGLOverlayView` and utility functions such as `latLngToMeters`, `latLngToVector3`, and `latLngToVector3Relative`, for converting latitude and longitude to vectors in the mercator coordinate space.
 
-> **Note**: Thils library requires the beta version of Google Maps Platform JavaScript.
+> **Note**: This library requires the beta version of Google Maps Platform JavaScript.
 > 
 ## Install
 
@@ -23,7 +23,7 @@ Available via npm as the package [@googlemaps/three](https://www.npmjs.com/packa
 npm i @googlemaps/three
 ```
 
-Alternativly you may add the umd package directly to the html document using the unpkg link.
+Alternatively you may add the umd package directly to the html document using the unpkg link.
 
 ```
 <script src="https://unpkg.com/@googlemaps/three/dist/index.min.js"></script>
