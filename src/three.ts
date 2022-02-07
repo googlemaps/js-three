@@ -40,12 +40,12 @@ export interface ThreeJSOverlayViewOptions {
 }
 
 /**
- * Add a [three.js](https://threejs.org) scene as a [Google Maps WebglOverlayView](http://goo.gle/webgloverlayview-ref).
+ * Add a [three.js](https://threejs.org) scene as a [Google Maps WebGLOverlayView](http://goo.gle/WebGLOverlayView-ref).
  *
  * **Note**: The scene will be rotated to a default up axis of (0, 1, 0) matching that of three.js.
  * *
  */
-export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
+export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
   /**
    * See [[ThreeJSOverlayViewOptions.anchor]]
    */
@@ -58,7 +58,7 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
   protected readonly camera: PerspectiveCamera;
   protected readonly scale: Float32Array;
   protected readonly rotation: Float32Array;
-  protected readonly overlay: google.maps.WebglOverlayView;
+  protected readonly overlay: google.maps.WebGLOverlayView;
   protected renderer: WebGLRenderer;
 
   constructor({
@@ -68,7 +68,7 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
     scene = new Scene(),
     map,
   }: ThreeJSOverlayViewOptions) {
-    this.overlay = new google.maps.WebglOverlayView();
+    this.overlay = new google.maps.WebGLOverlayView();
     this.renderer = null;
     this.camera = null;
     this.anchor = anchor;
@@ -90,6 +90,13 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
     if (map) {
       this.setMap(map);
     }
+  }
+  onStateUpdate(options: google.maps.WebGLStateOptions): void {
+    this.overlay.onStateUpdate(options);
+  }
+
+  requestStateUpdate(): void {
+    this.overlay.requestStateUpdate();
   }
 
   onAdd(): void {}
@@ -148,7 +155,7 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
     this.overlay.unbindAll();
   }
 
-  onContextRestored(gl: WebGLRenderingContext) {
+  onContextRestored({ gl }: google.maps.WebGLStateOptions) {
     this.renderer = new WebGLRenderer({
       canvas: gl.canvas,
       context: gl,
@@ -178,10 +185,7 @@ export class ThreeJSOverlayView implements google.maps.WebglOverlayView {
     this.renderer = null;
   }
 
-  onDraw(
-    gl: WebGLRenderingContext,
-    transformer: google.maps.CoordinateTransformer
-  ): void {
+  onDraw({ gl, transformer }: google.maps.WebGLDrawOptions): void {
     const { lat, lng, altitude } = this.anchor;
 
     this.camera.projectionMatrix.fromArray(
