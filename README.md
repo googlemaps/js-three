@@ -31,6 +31,8 @@ Alternatively you may add the umd package directly to the html document using th
 
 When adding via unpkg, the package can be accessed at `google.maps.plugins.three`. A version can be specified by using `https://unpkg.com/@googlemaps/three@VERSION/dist/...`.
 
+If you get the error, `Uncaught ReferenceError: three is not defined`, please see [this discussion](https://github.com/googlemaps/js-three/issues/261).
+
 ## Documentation
 
 Checkout the the reference [documentation](https://googlemaps.github.io/js-three/index.html).
