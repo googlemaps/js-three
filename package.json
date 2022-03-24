@@ -41,7 +41,7 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/runtime-corejs3": "^7.17.8",
     "@googlemaps/jest-mocks": "^2.6.2",
-    "@googlemaps/js-api-loader": "^1.13.9",
+    "@googlemaps/js-api-loader": "^1.13.10",
     "@rollup/plugin-babel": "^5.3.1",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-html": "^0.2.4",
