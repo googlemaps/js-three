@@ -22,7 +22,6 @@ import {
   sRGBEncoding,
 } from "three";
 
-
 export interface ThreeJSOverlayViewOptions {
   /** The anchor for the scene. Defaults to {lat: 0, lng: 0, altitude: 0}. */
   anchor?: google.maps.LatLngAltitudeLiteral;
@@ -183,13 +182,8 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
   }
 
   onDraw({ gl, transformer }: google.maps.WebGLDrawOptions): void {
-
     this.camera.projectionMatrix.fromArray(
-      transformer.fromLatLngAltitude(
-        this.anchor,
-        this.rotation,
-        this.scale
-      )
+      transformer.fromLatLngAltitude(this.anchor, this.rotation, this.scale)
     );
 
     gl.disable(gl.SCISSOR_TEST);
