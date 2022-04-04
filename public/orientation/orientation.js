@@ -126,8 +126,7 @@ class ThreeJSOverlayView {
         this.renderer = null;
     }
     onDraw({ gl, transformer }) {
-        const { lat, lng, altitude } = this.anchor;
-        this.camera.projectionMatrix.fromArray(transformer.fromLatLngAltitude({ lat, lng }, altitude, this.rotation, this.scale));
+        this.camera.projectionMatrix.fromArray(transformer.fromLatLngAltitude(this.anchor, this.rotation, this.scale));
         gl.disable(gl.SCISSOR_TEST);
         this.requestRedraw();
         this.renderer.render(this.scene, this.camera);

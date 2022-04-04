@@ -15,12 +15,9 @@
  */
 /// <reference types="google.maps" />
 import { PerspectiveCamera, Scene, WebGLRenderer } from "three";
-export interface LatLngAltitudeLiteral extends google.maps.LatLngLiteral {
-    altitude: number;
-}
 export interface ThreeJSOverlayViewOptions {
     /** The anchor for the scene. Defaults to {lat: 0, lng: 0, altitude: 0}. */
-    anchor?: LatLngAltitudeLiteral;
+    anchor?: google.maps.LatLngAltitudeLiteral;
     /** The rotations applied in the camera transformation matrix. Defaults to [0, 0, 0]. */
     rotation?: Float32Array;
     /** The scale applied in the camera transformation matrix. Defaults to [1, 1, 1].*/
@@ -40,7 +37,7 @@ export declare class ThreeJSOverlayView implements google.maps.WebGLOverlayView 
     /**
      * See [[ThreeJSOverlayViewOptions.anchor]]
      */
-    readonly anchor: LatLngAltitudeLiteral;
+    readonly anchor: google.maps.LatLngAltitudeLiteral;
     /**
      * See [[ThreeJSOverlayViewOptions.scene]]
      */
