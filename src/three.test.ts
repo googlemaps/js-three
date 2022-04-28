@@ -15,7 +15,7 @@
  */
 
 import { Map, initialize } from "@googlemaps/jest-mocks";
-import { PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import * as THREE from "three";
 
 import { ThreeJSOverlayView } from "./three";
 
@@ -34,12 +34,37 @@ beforeEach(() => {
 });
 
 test("instantiates with defaults", () => {
-  const overlay = new ThreeJSOverlayView({});
+  const overlay = new ThreeJSOverlayView({ THREE });
 
   expect(overlay["overlay"]).toBeDefined();
-  expect(overlay["camera"]).toBeInstanceOf(PerspectiveCamera);
+  expect(overlay["camera"]).toBeInstanceOf(THREE.PerspectiveCamera);
 
-  expect(overlay.scene).toBeInstanceOf(Scene);
+  expect(overlay.scene).toBeInstanceOf(THREE.Scene);
+  expect(overlay.scene.rotation.x).toEqual(Math.PI / 2);
+
+  // required hooks must be defined
+  expect(overlay["overlay"].onAdd).toBeDefined();
+  expect(overlay["overlay"].onRemove).toBeDefined();
+  expect(overlay["overlay"].onContextLost).toBeDefined();
+  expect(overlay["overlay"].onContextRestored).toBeDefined();
+  expect(overlay["overlay"].onDraw).toBeDefined();
+});
+
+test("instantiates with minimal THREE", () => {
+  const overlay = new ThreeJSOverlayView({
+    THREE: {
+      Scene: THREE.Scene,
+      WebGLRenderer: THREE.WebGLRenderer,
+      PerspectiveCamera: THREE.PerspectiveCamera,
+      PCFSoftShadowMap: THREE.PCFSoftShadowMap,
+      sRGBEncoding: THREE.sRGBEncoding,
+    },
+  });
+
+  expect(overlay["overlay"]).toBeDefined();
+  expect(overlay["camera"]).toBeInstanceOf(THREE.PerspectiveCamera);
+
+  expect(overlay.scene).toBeInstanceOf(THREE.Scene);
   expect(overlay.scene.rotation.x).toEqual(Math.PI / 2);
 
   // required hooks must be defined
@@ -58,6 +83,7 @@ test("instantiates with map and calls setMap", () => {
 
   const overlay = new ThreeJSOverlayView({
     map,
+    THREE,
   });
 
   expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
@@ -68,14 +94,14 @@ test("setMap is called on overlay", () => {
     document.createElement("div"),
     {}
   ) as unknown as google.maps.Map;
-  const overlay = new ThreeJSOverlayView({});
+  const overlay = new ThreeJSOverlayView({ THREE });
   overlay.setMap(map);
 
   expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
 });
 
 test("onContext lost disposes of renderer", () => {
-  const overlay = new ThreeJSOverlayView({});
+  const overlay = new ThreeJSOverlayView({ THREE });
 
   overlay.onContextLost(); // noop
   expect(overlay["renderer"]).toBeNull();
@@ -83,7 +109,7 @@ test("onContext lost disposes of renderer", () => {
   const dispose = jest.fn();
   overlay["renderer"] = {
     dispose,
-  } as unknown as WebGLRenderer;
+  } as unknown as THREE.WebGLRenderer;
 
   overlay.onContextLost();
 
@@ -92,21 +118,21 @@ test("onContext lost disposes of renderer", () => {
 });
 
 test("getMap is called on overlay", () => {
-  const overlay = new ThreeJSOverlayView({});
+  const overlay = new ThreeJSOverlayView({ THREE });
   overlay.getMap();
 
   expect(overlay["overlay"].getMap).toHaveBeenCalledWith();
 });
 
 test("requestRedraw is called on overlay", () => {
-  const overlay = new ThreeJSOverlayView({});
+  const overlay = new ThreeJSOverlayView({ THREE });
   overlay.requestRedraw();
 
   expect(overlay["overlay"].requestRedraw).toHaveBeenCalledWith();
 });
 
 test("addListener is called on overlay", () => {
-  const overlay = new ThreeJSOverlayView({});
+  const overlay = new ThreeJSOverlayView({ THREE });
   const handler = () => {};
   const eventName = "foo";
 

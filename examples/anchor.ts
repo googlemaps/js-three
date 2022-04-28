@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AxesHelper, Scene } from "three";
+import * as THREE from "three";
 import { LOADER_OPTIONS, MAP_ID } from "./config";
 import { ThreeJSOverlayView, WORLD_SIZE } from "../src";
 
@@ -33,14 +33,15 @@ const mapOptions = {
 
 new Loader(LOADER_OPTIONS).load().then(() => {
   const map = new google.maps.Map(document.getElementById("map"), mapOptions);
-  const scene = new Scene();
+  const scene = new THREE.Scene();
 
-  scene.add(new AxesHelper(WORLD_SIZE));
+  scene.add(new THREE.AxesHelper(WORLD_SIZE));
 
   // add ThreeJS Overlay view anchored to center of map
   new ThreeJSOverlayView({
     anchor: { ...mapOptions.center, altitude: 0 },
     scene,
     map,
+    THREE,
   });
 });

@@ -41,14 +41,17 @@ Checkout the the reference [documentation](https://googlemaps.github.io/js-three
 
 <img src="https://storage.googleapis.com/geo-devrel-public-buckets/orientation.jpg" alt="orientation of axes" width="400"/>
 
+> Note: You must pass a reference to THREE in the constructor of the `ThreeJSOverlayView` class. It may be beneficial to pass a subset of THREE to better enable tree shaking.
+
 ## Example
 
 The following example provides a skeleton for adding objects to the map with this library.
 
 ```js
+import * as THREE from 'three';
 const map = new google.maps.Map(document.getElementById("map"), mapOptions);
 // instantiate a ThreeJS Scene
-const scene = new Scene();
+const scene = new THREE.Scene();
 
 // Create a box mesh
 const box = new Mesh(
@@ -68,6 +71,7 @@ scene.add(box);
 new ThreeJSOverlayView({
   scene,
   map,
+  THREE,
 });
 
 // rotate the box using requestAnimationFrame
