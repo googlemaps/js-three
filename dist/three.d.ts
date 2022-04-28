@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 /// <reference types="google.maps" />
-import { PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import type three from "three";
+export declare type MinimalThree = Pick<typeof three, "Scene" | "WebGLRenderer" | "PerspectiveCamera" | "PCFSoftShadowMap" | "sRGBEncoding">;
 export interface ThreeJSOverlayViewOptions {
     /** The anchor for the scene. Defaults to {lat: 0, lng: 0, altitude: 0}. */
     anchor?: google.maps.LatLngAltitudeLiteral;
@@ -25,7 +26,9 @@ export interface ThreeJSOverlayViewOptions {
     /** The map can be set at initialization or by calling `setMap(map)`. */
     map?: google.maps.Map;
     /** The scene can be provided. Defaults to `new Scene()`. */
-    scene?: Scene;
+    scene?: THREE.Scene;
+    /** Pass an instance of THREE into the constructor. */
+    THREE?: MinimalThree;
 }
 /**
  * Add a [three.js](https://threejs.org) scene as a [Google Maps WebGLOverlayView](http://goo.gle/WebGLOverlayView-ref).
@@ -41,13 +44,14 @@ export declare class ThreeJSOverlayView implements google.maps.WebGLOverlayView 
     /**
      * See [[ThreeJSOverlayViewOptions.scene]]
      */
-    readonly scene: Scene;
-    protected readonly camera: PerspectiveCamera;
+    readonly scene: THREE.Scene;
+    protected readonly camera: three.PerspectiveCamera;
     protected readonly scale: Float32Array;
     protected readonly rotation: Float32Array;
     protected readonly overlay: google.maps.WebGLOverlayView;
-    protected renderer: WebGLRenderer;
-    constructor({ anchor, rotation, scale, scene, map, }: ThreeJSOverlayViewOptions);
+    protected renderer: three.WebGLRenderer;
+    protected readonly THREE: MinimalThree;
+    constructor({ anchor, rotation, scale, scene, THREE, map, }: ThreeJSOverlayViewOptions);
     onStateUpdate(options: google.maps.WebGLStateOptions): void;
     requestStateUpdate(): void;
     onAdd(): void;

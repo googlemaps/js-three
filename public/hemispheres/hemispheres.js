@@ -1,4 +1,4 @@
-import { S as Scene, P as PerspectiveCamera, W as WebGLRenderer, a as PCFSoftShadowMap, s as sRGBEncoding, V as Vector3, M as MathUtils, L as Loader, b as Mesh, B as BoxGeometry, c as MeshNormalMaterial } from './vendor-de6dbdc8.js';
+import { V as Vector3, M as MathUtils, L as Loader, S as Scene, a as Mesh, B as BoxGeometry, b as MeshNormalMaterial, T as THREE } from './vendor-8c2a99f6.js';
 
 /**
  * Copyright 2021 Google LLC
@@ -44,14 +44,15 @@ const LOADER_OPTIONS = {
  * *
  */
 class ThreeJSOverlayView {
-    constructor({ anchor = { lat: 0, lng: 0, altitude: 0 }, rotation = new Float32Array([0, 0, 0]), scale = new Float32Array([1, 1, 1]), scene = new Scene(), map, }) {
+    constructor({ anchor = { lat: 0, lng: 0, altitude: 0 }, rotation = new Float32Array([0, 0, 0]), scale = new Float32Array([1, 1, 1]), scene, THREE, map, }) {
         this.overlay = new google.maps.WebGLOverlayView();
         this.renderer = null;
         this.camera = null;
         this.anchor = anchor;
         this.rotation = rotation;
         this.scale = scale;
-        this.scene = scene;
+        this.THREE = THREE;
+        this.scene = scene !== null && scene !== void 0 ? scene : new this.THREE.Scene();
         // rotate scene consistent with y up in THREE
         this.scene.rotation.x = Math.PI / 2;
         this.overlay.onAdd = this.onAdd.bind(this);
@@ -59,7 +60,7 @@ class ThreeJSOverlayView {
         this.overlay.onContextLost = this.onContextLost.bind(this);
         this.overlay.onContextRestored = this.onContextRestored.bind(this);
         this.overlay.onDraw = this.onDraw.bind(this);
-        this.camera = new PerspectiveCamera();
+        this.camera = new this.THREE.PerspectiveCamera();
         if (map) {
             this.setMap(map);
         }
@@ -106,14 +107,14 @@ class ThreeJSOverlayView {
         this.overlay.unbindAll();
     }
     onContextRestored({ gl }) {
-        this.renderer = new WebGLRenderer(Object.assign({ canvas: gl.canvas, context: gl }, gl.getContextAttributes()));
+        this.renderer = new this.THREE.WebGLRenderer(Object.assign({ canvas: gl.canvas, context: gl }, gl.getContextAttributes()));
         this.renderer.autoClear = false;
         this.renderer.autoClearDepth = false;
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = PCFSoftShadowMap;
+        this.renderer.shadowMap.type = this.THREE.PCFSoftShadowMap;
         // LinearEncoding is default for historical reasons
         // https://discourse.threejs.org/t/linearencoding-vs-srgbencoding/23243
-        this.renderer.outputEncoding = sRGBEncoding;
+        this.renderer.outputEncoding = this.THREE.sRGBEncoding;
         const { width, height, clientWidth } = gl.canvas;
         this.renderer.setPixelRatio(width / clientWidth);
         this.renderer.setSize(width, height, false);
@@ -225,5 +226,6 @@ new Loader(LOADER_OPTIONS).load().then(() => {
     new ThreeJSOverlayView({
         scene,
         map,
+        THREE,
     });
 });

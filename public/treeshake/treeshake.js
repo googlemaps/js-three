@@ -1,4 +1,26 @@
-import { MathUtils, Vector3 } from 'three';
+import { V as Vector3, M as MathUtils, L as Loader, S as Scene, a as Mesh, B as BoxGeometry, b as MeshNormalMaterial, W as WebGLRenderer, P as PerspectiveCamera, c as PCFSoftShadowMap, s as sRGBEncoding } from './vendor-d25bbb26.js';
+
+/**
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const MAP_ID = "7b9a897acd0a63a4";
+const LOADER_OPTIONS = {
+    apiKey: "AIzaSyD8xiaVPWB02OeQkJOenLiJzdeUHzlhu00",
+    version: "beta",
+    libraries: [],
+};
 
 /**
  * Copyright 2021 Google LLC
@@ -130,7 +152,6 @@ class ThreeJSOverlayView {
  * limitations under the License.
  */
 const EARTH_RADIUS = 6371010;
-const WORLD_SIZE = Math.PI * EARTH_RADIUS;
 function toLatLngLiteral(latLng) {
     if (window.google && google.maps && latLng instanceof google.maps.LatLng) {
         return latLng.toJSON();
@@ -155,17 +176,61 @@ function latLngToVector3(point, target = new Vector3()) {
     const { x, y } = latLngToMeters(point);
     return target.set(x, 0, -y);
 }
-/**
- * Converts latitude and longitude to world space coordinates relative
- * to a reference location with y up.
- */
-function latLngToVector3Relative(point, reference, target = new Vector3()) {
-    const p = latLngToVector3(point);
-    const r = latLngToVector3(reference);
-    target.setX(Math.abs(r.x - p.x) * Math.sign(p.x - r.x));
-    target.setY(Math.abs(r.y - p.y) * Math.sign(p.y - r.y));
-    target.setZ(Math.abs(r.z - p.z) * Math.sign(p.z - r.z));
-    return target;
-}
 
-export { EARTH_RADIUS, ThreeJSOverlayView, WORLD_SIZE, latLngToMeters, latLngToVector3, latLngToVector3Relative };
+/**
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const mapOptions = {
+    center: {
+        lng: -122.34378755092621,
+        lat: 47.607465080615476,
+    },
+    mapId: MAP_ID,
+    zoom: 15,
+    heading: 45,
+    tilt: 67,
+};
+new Loader(LOADER_OPTIONS).load().then(() => {
+    // instantiate the map
+    const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    // instantiate a ThreeJS Scene
+    const scene = new Scene();
+    // Create a box mesh
+    const box = new Mesh(new BoxGeometry(10, 50, 10), new MeshNormalMaterial());
+    // set position at center of map
+    box.position.copy(latLngToVector3(mapOptions.center));
+    // set position vertically
+    box.position.setY(25);
+    // add box mesh to the scene
+    scene.add(box);
+    // instantiate the ThreeJS Overlay with the scene and map
+    new ThreeJSOverlayView({
+        scene,
+        map,
+        THREE: {
+            Scene,
+            WebGLRenderer,
+            PerspectiveCamera,
+            PCFSoftShadowMap,
+            sRGBEncoding,
+        },
+    });
+    // rotate the box using requestAnimationFrame
+    const animate = () => {
+        box.rotateY(MathUtils.degToRad(0.1));
+        requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+});
