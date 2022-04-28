@@ -28,7 +28,7 @@ export interface ThreeJSOverlayViewOptions {
     /** The scene can be provided. Defaults to `new Scene()`. */
     scene?: THREE.Scene;
     /** Pass an instance of THREE into the constructor. */
-    THREE?: MinimalThree;
+    THREE: MinimalThree;
 }
 /**
  * Add a [three.js](https://threejs.org) scene as a [Google Maps WebGLOverlayView](http://goo.gle/WebGLOverlayView-ref).
