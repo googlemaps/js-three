@@ -37,7 +37,7 @@ export interface ThreeJSOverlayViewOptions {
   /** The scene can be provided. Defaults to `new Scene()`. */
   scene?: THREE.Scene;
   /** Pass an instance of THREE into the constructor. */
-  THREE?: MinimalThree;
+  THREE: MinimalThree;
 }
 
 /**
