@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  PCFSoftShadowMap,
-  PerspectiveCamera,
-  Scene,
-  WebGLRenderer,
-  sRGBEncoding,
-} from "three";
+import type three from "three";
+
+export type MinimalThree = Pick<
+  typeof three,
+  | "Scene"
+  | "WebGLRenderer"
+  | "PerspectiveCamera"
+  | "PCFSoftShadowMap"
+  | "sRGBEncoding"
+>;
 
 export interface ThreeJSOverlayViewOptions {
   /** The anchor for the scene. Defaults to {lat: 0, lng: 0, altitude: 0}. */
@@ -32,7 +35,9 @@ export interface ThreeJSOverlayViewOptions {
   /** The map can be set at initialization or by calling `setMap(map)`. */
   map?: google.maps.Map;
   /** The scene can be provided. Defaults to `new Scene()`. */
-  scene?: Scene;
+  scene?: THREE.Scene;
+  /** Pass an instance of THREE into the constructor. */
+  THREE?: MinimalThree;
 }
 
 /**
@@ -45,23 +50,25 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
   /**
    * See [[ThreeJSOverlayViewOptions.anchor]]
    */
-  readonly anchor: google.maps.LatLngAltitudeLiteral;
+  public readonly anchor: google.maps.LatLngAltitudeLiteral;
   /**
    * See [[ThreeJSOverlayViewOptions.scene]]
    */
-  readonly scene: Scene;
+  public readonly scene: THREE.Scene;
 
-  protected readonly camera: PerspectiveCamera;
+  protected readonly camera: three.PerspectiveCamera;
   protected readonly scale: Float32Array;
   protected readonly rotation: Float32Array;
   protected readonly overlay: google.maps.WebGLOverlayView;
-  protected renderer: WebGLRenderer;
+  protected renderer: three.WebGLRenderer;
+  protected readonly THREE: MinimalThree;
 
   constructor({
     anchor = { lat: 0, lng: 0, altitude: 0 },
     rotation = new Float32Array([0, 0, 0]),
     scale = new Float32Array([1, 1, 1]),
-    scene = new Scene(),
+    scene,
+    THREE,
     map,
   }: ThreeJSOverlayViewOptions) {
     this.overlay = new google.maps.WebGLOverlayView();
@@ -70,7 +77,8 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     this.anchor = anchor;
     this.rotation = rotation;
     this.scale = scale;
-    this.scene = scene;
+    this.THREE = THREE;
+    this.scene = scene ?? new this.THREE.Scene();
 
     // rotate scene consistent with y up in THREE
     this.scene.rotation.x = Math.PI / 2;
@@ -81,7 +89,7 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     this.overlay.onContextRestored = this.onContextRestored.bind(this);
     this.overlay.onDraw = this.onDraw.bind(this);
 
-    this.camera = new PerspectiveCamera();
+    this.camera = new this.THREE.PerspectiveCamera();
 
     if (map) {
       this.setMap(map);
@@ -152,7 +160,7 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
   }
 
   onContextRestored({ gl }: google.maps.WebGLStateOptions) {
-    this.renderer = new WebGLRenderer({
+    this.renderer = new this.THREE.WebGLRenderer({
       canvas: gl.canvas,
       context: gl,
       ...gl.getContextAttributes(),
@@ -160,11 +168,11 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     this.renderer.autoClear = false;
     this.renderer.autoClearDepth = false;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = PCFSoftShadowMap;
+    this.renderer.shadowMap.type = this.THREE.PCFSoftShadowMap;
 
     // LinearEncoding is default for historical reasons
     // https://discourse.threejs.org/t/linearencoding-vs-srgbencoding/23243
-    this.renderer.outputEncoding = sRGBEncoding;
+    this.renderer.outputEncoding = this.THREE.sRGBEncoding;
 
     const { width, height, clientWidth } = gl.canvas as HTMLCanvasElement;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BoxBufferGeometry, Mesh, MeshNormalMaterial, Scene } from "three";
+import * as THREE from "three";
 import { LOADER_OPTIONS, MAP_ID } from "./config";
 import { ThreeJSOverlayView, latLngToVector3 } from "../src";
 
@@ -34,7 +34,7 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   // instantiate the map
   const map = new google.maps.Map(document.getElementById("map"), mapOptions);
   // instantiate a ThreeJS Scene
-  const scene = new Scene();
+  const scene = new THREE.Scene();
 
   [
     { lat: 45, lng: -90 },
@@ -43,9 +43,9 @@ new Loader(LOADER_OPTIONS).load().then(() => {
     { lat: -45, lng: 90 },
   ].forEach((latLng: google.maps.LatLngLiteral) => {
     // Create a box mesh
-    const box = new Mesh(
-      new BoxBufferGeometry(10, 50, 10),
-      new MeshNormalMaterial()
+    const box = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(10, 50, 10),
+      new THREE.MeshNormalMaterial()
     );
 
     box.scale.multiplyScalar(10000);
@@ -63,5 +63,6 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   const overlay = new ThreeJSOverlayView({
     scene,
     map,
+    THREE,
   });
 });

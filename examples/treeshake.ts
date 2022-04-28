@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
+import {
+  Scene,
+  WebGLRenderer,
+  PerspectiveCamera,
+  PCFSoftShadowMap,
+  sRGBEncoding,
+  Mesh,
+  BoxBufferGeometry,
+  MeshNormalMaterial,
+  MathUtils,
+} from "three";
+
 import { LOADER_OPTIONS, MAP_ID } from "./config";
 import { ThreeJSOverlayView, latLngToVector3 } from "../src";
 
@@ -35,12 +46,12 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   // instantiate the map
   const map = new google.maps.Map(document.getElementById("map"), mapOptions);
   // instantiate a ThreeJS Scene
-  const scene = new THREE.Scene();
+  const scene = new Scene();
 
   // Create a box mesh
-  const box = new THREE.Mesh(
-    new THREE.BoxBufferGeometry(10, 50, 10),
-    new THREE.MeshNormalMaterial()
+  const box = new Mesh(
+    new BoxBufferGeometry(10, 50, 10),
+    new MeshNormalMaterial()
   );
 
   // set position at center of map
@@ -55,12 +66,18 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   const overlay = new ThreeJSOverlayView({
     scene,
     map,
-    THREE,
+    THREE: {
+      Scene,
+      WebGLRenderer,
+      PerspectiveCamera,
+      PCFSoftShadowMap,
+      sRGBEncoding,
+    },
   });
 
   // rotate the box using requestAnimationFrame
   const animate = () => {
-    box.rotateY(THREE.MathUtils.degToRad(0.1));
+    box.rotateY(MathUtils.degToRad(0.1));
 
     requestAnimationFrame(animate);
   };
