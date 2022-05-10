@@ -1,7 +1,7 @@
 # Google Maps ThreeJS Overlay View and Utilities
 
 [![npm](https://img.shields.io/npm/v/@googlemaps/three)](https://www.npmjs.com/package/@googlemaps/three)
-![Build](https://github.com/googlemaps/js-three/workflows/Build/badge.svg)
+![Build](https://github.com/googlemaps/js-three/workflows/Test/badge.svg)
 ![Release](https://github.com/googlemaps/js-three/workflows/Release/badge.svg)
 [![codecov](https://codecov.io/gh/googlemaps/js-three/branch/main/graph/badge.svg)](https://codecov.io/gh/googlemaps/js-three)
 ![GitHub contributors](https://img.shields.io/github/contributors/googlemaps/js-three?color=green)
