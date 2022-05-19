@@ -14146,7 +14146,7 @@ function WebGLBackground( renderer, cubemaps, state, objects, alpha, premultipli
 			return clearColor;
 
 		},
-		setClearColor: function ( color, alpha = 1 ) {
+		setClearColor: function ( color, alpha ) {
 
 			clearColor.set( color );
 			clearAlpha = alpha;
@@ -20589,7 +20589,7 @@ function WebGLRenderStates( extensions, capabilities ) {
 
 	let renderStates = new WeakMap();
 
-	function get( scene, renderCallDepth = 0 ) {
+	function get( scene, renderCallDepth ) {
 
 		let renderState;
 
