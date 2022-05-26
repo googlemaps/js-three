@@ -174,10 +174,8 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     // https://discourse.threejs.org/t/linearencoding-vs-srgbencoding/23243
     this.renderer.outputEncoding = this.THREE.sRGBEncoding;
 
-    const { width, height, clientWidth } = gl.canvas as HTMLCanvasElement;
-
-    this.renderer.setPixelRatio(width / clientWidth);
-    this.renderer.setSize(width, height, false);
+    const { width, height } = gl.canvas;
+    this.renderer.setViewport(0, 0, width, height);
   }
 
   onContextLost() {
