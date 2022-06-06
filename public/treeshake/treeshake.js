@@ -1,4 +1,4 @@
-import { V as Vector3, M as MathUtils, L as Loader, S as Scene, a as Mesh, B as BoxGeometry, b as MeshNormalMaterial, W as WebGLRenderer, P as PerspectiveCamera, c as PCFSoftShadowMap, s as sRGBEncoding } from './vendor-61b4332f.js';
+import { V as Vector3, M as MathUtils, L as Loader, S as Scene, a as Mesh, B as BoxGeometry, b as MeshNormalMaterial, W as WebGLRenderer, P as PerspectiveCamera, c as PCFSoftShadowMap, s as sRGBEncoding } from './vendor-c6a6961c.js';
 
 /**
  * Copyright 2021 Google LLC
