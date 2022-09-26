@@ -46,7 +46,7 @@
     "@rollup/plugin-node-resolve": "^14.1.0",
     "@rollup/plugin-typescript": "^8.5.0",
     "@types/d3-random": "^3.0.1",
-    "@types/google.maps": "^3.50.1",
+    "@types/google.maps": "^3.50.2",
     "@types/jest": "^27.4.1",
     "@types/proj4": "^2.5.2",
     "@types/selenium-webdriver": "^4.1.5",
