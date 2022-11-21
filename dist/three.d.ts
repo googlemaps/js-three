@@ -15,7 +15,7 @@
  */
 /// <reference types="google.maps" />
 import type three from "three";
-export declare type MinimalThree = Pick<typeof three, "Scene" | "WebGLRenderer" | "PerspectiveCamera" | "PCFSoftShadowMap" | "sRGBEncoding">;
+export type MinimalThree = Pick<typeof three, "Scene" | "WebGLRenderer" | "PerspectiveCamera" | "PCFSoftShadowMap" | "sRGBEncoding">;
 export interface ThreeJSOverlayViewOptions {
     /** The anchor for the scene. Defaults to {lat: 0, lng: 0, altitude: 0}. */
     anchor?: google.maps.LatLngAltitudeLiteral;
