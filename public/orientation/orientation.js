@@ -1,4 +1,4 @@
-import { L as Loader, S as Scene, A as AxesHelper, T as THREE } from './vendor-268aab73.js';
+import { L as Loader, S as Scene, A as AxesHelper, T as THREE } from './vendor-72ee4979.js';
 
 /**
  * Copyright 2021 Google LLC
