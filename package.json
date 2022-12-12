@@ -40,7 +40,7 @@
     "@googlemaps/jest-mocks": "^2.7.5",
     "@googlemaps/js-api-loader": "^1.15.1",
     "@rollup/plugin-babel": "^6.0.3",
-    "@rollup/plugin-commonjs": "^23.0.3",
+    "@rollup/plugin-commonjs": "^23.0.4",
     "@rollup/plugin-html": "^1.0.1",
     "@rollup/plugin-json": "^5.0.2",
     "@rollup/plugin-node-resolve": "^15.0.1",
