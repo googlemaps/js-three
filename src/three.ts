@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type three from "three";
+import type * as three from "three";
 
 export type MinimalThree = Pick<
   typeof three,
