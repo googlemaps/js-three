@@ -1,4 +1,4 @@
-import { V as Vector3, M as MathUtils, L as Loader, S as Scene, a as Mesh, B as BoxBufferGeometry, b as MeshNormalMaterial, T as THREE } from './vendor-7fe7e80a.js';
+import { V as Vector3, M as MathUtils, L as Loader, S as Scene, a as Mesh, B as BoxBufferGeometry, b as MeshNormalMaterial, T as THREE } from './vendor-9540e195.js';
 
 /**
  * Copyright 2021 Google LLC
