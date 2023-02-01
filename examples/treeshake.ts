@@ -21,7 +21,7 @@ import {
   PCFSoftShadowMap,
   sRGBEncoding,
   Mesh,
-  BoxBufferGeometry,
+  BoxGeometry,
   MeshNormalMaterial,
   MathUtils,
 } from "three";
@@ -49,10 +49,7 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   const scene = new Scene();
 
   // Create a box mesh
-  const box = new Mesh(
-    new BoxBufferGeometry(10, 50, 10),
-    new MeshNormalMaterial()
-  );
+  const box = new Mesh(new BoxGeometry(10, 50, 10), new MeshNormalMaterial());
 
   // set position at center of map
   box.position.copy(latLngToVector3(mapOptions.center));

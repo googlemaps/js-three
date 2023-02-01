@@ -44,7 +44,7 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   ].forEach((latLng: google.maps.LatLngLiteral) => {
     // Create a box mesh
     const box = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(10, 50, 10),
+      new THREE.BoxGeometry(10, 50, 10),
       new THREE.MeshNormalMaterial()
     );
 
