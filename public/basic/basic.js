@@ -1,4 +1,4 @@
-import { V as Vector3, M as MathUtils, L as Loader, S as Scene, a as Mesh, B as BoxBufferGeometry, b as MeshNormalMaterial, T as THREE } from './vendor-9540e195.js';
+import { V as Vector3, M as MathUtils, L as Loader, S as Scene, a as Mesh, B as BoxGeometry, b as MeshNormalMaterial, T as THREE } from './vendor-80f01327.js';
 
 /**
  * Copyright 2021 Google LLC
@@ -207,7 +207,7 @@ new Loader(LOADER_OPTIONS).load().then(() => {
     // instantiate a ThreeJS Scene
     const scene = new Scene();
     // Create a box mesh
-    const box = new Mesh(new BoxBufferGeometry(10, 50, 10), new MeshNormalMaterial());
+    const box = new Mesh(new BoxGeometry(10, 50, 10), new MeshNormalMaterial());
     // set position at center of map
     box.position.copy(latLngToVector3(mapOptions.center));
     // set position vertically

@@ -50909,4 +50909,4 @@ class Loader {
     }
 }
 
-export { BoxBufferGeometry as B, Loader as L, MathUtils as M, Scene as S, THREE as T, Vector3 as V, Mesh as a, MeshNormalMaterial as b };
+export { BoxGeometry as B, Loader as L, MathUtils as M, Scene as S, THREE as T, Vector3 as V, Mesh as a, MeshNormalMaterial as b };
