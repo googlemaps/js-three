@@ -18,12 +18,13 @@ import { babel } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
 import { terser } from "rollup-plugin-terser";
 import typescript from "@rollup/plugin-typescript";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 
 const babelOptions = {
   extensions: [".js", ".ts"],
 };
 
-const terserOptions = { output: { comments: "" } };
+const terserOptions = { output: { comments: "some" } };
 
 export default [
   {
@@ -33,6 +34,7 @@ export default [
 
       commonjs(),
       babel(babelOptions),
+      nodeResolve(),
       terser(terserOptions),
     ],
     external: ["three"],
@@ -64,6 +66,7 @@ export default [
 
       commonjs(),
       babel(babelOptions),
+      nodeResolve(),
       terser(terserOptions),
     ],
     external: ["three"],
@@ -81,6 +84,12 @@ export default [
     input: "src/index.ts",
     plugins: [
       typescript({ tsconfig: "./tsconfig.json", declarationDir: "./" }),
+      babel({
+        presets: ["@babel/preset-modules"],
+        babelrc: false,
+        extensions: [".js", ".ts"],
+      }),
+      terser(terserOptions),
     ],
     output: {
       file: "dist/index.esm.js",
