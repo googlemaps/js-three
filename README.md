@@ -49,14 +49,15 @@ The following example provides a skeleton for adding objects to the map with thi
 
 ```js
 import * as THREE from 'three';
+
 const map = new google.maps.Map(document.getElementById("map"), mapOptions);
 // instantiate a ThreeJS Scene
 const scene = new THREE.Scene();
 
 // Create a box mesh
-const box = new Mesh(
-  new BoxBufferGeometry(10, 50, 10),
-  new MeshNormalMaterial(),
+const box = new THREE.Mesh(
+  new THREE.BoxGeometry(10, 50, 10),
+  new THREE.MeshNormalMaterial(),
 );
 
 // set position at center of map
