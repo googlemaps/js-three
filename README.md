@@ -71,8 +71,7 @@ scene.add(box);
 // instantiate the ThreeJS Overlay with the scene and map
 new ThreeJSOverlayView({
   scene,
-  map,
-  THREE,
+  map
 });
 
 // rotate the box using requestAnimationFrame

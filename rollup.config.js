@@ -35,18 +35,25 @@ export default [
       babel(babelOptions),
       terser(terserOptions),
     ],
+    external: ["three"],
     output: [
       {
         file: "dist/index.umd.js",
         format: "umd",
         sourcemap: false,
         name: "google.maps.plugins.three",
+        globals: {
+          three: "THREE",
+        },
       },
       {
         file: "dist/index.min.js",
         format: "iife",
         sourcemap: false,
         name: "google.maps.plugins.three",
+        globals: {
+          three: "THREE",
+        },
       },
     ],
   },
@@ -59,11 +66,15 @@ export default [
       babel(babelOptions),
       terser(terserOptions),
     ],
+    external: ["three"],
     output: {
       file: "dist/index.dev.js",
       format: "iife",
       sourcemap: true,
       name: "google.maps.plugins.three",
+      globals: {
+        three: "THREE",
+      },
     },
   },
   {
