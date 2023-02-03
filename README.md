@@ -82,6 +82,10 @@ The following example provides a skeleton for adding objects to the map with thi
 
 ```js
 import * as THREE from "three";
+import { ThreeJSOverlayView, latLngToVector3 } from "@googlemaps/three";
+
+// when loading via UMD, remove the imports and use this instead:
+// const { ThreeJSOverlayView, latLngToVector3 } = google.maps.plugins.three;
 
 const map = new google.maps.Map(document.getElementById("map"), mapOptions);
 // instantiate a ThreeJS Scene
