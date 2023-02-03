@@ -13,8 +13,6 @@
 
 Add [three.js](https://threejs.org) objects to Google Maps Platform JS. The library provides a `ThreeJSOverlayView` class extending `google.maps.WebGLOverlayView` and utility functions such as `latLngToMeters`, `latLngToVector3`, and `latLngToVector3Relative`, for converting latitude and longitude to vectors in the mercator coordinate space.
 
-> **Note**: This library requires the beta version of Google Maps Platform JavaScript.
-> 
 ## Install
 
 Available via npm as the package [@googlemaps/three](https://www.npmjs.com/package/@googlemaps/three).
@@ -23,15 +21,50 @@ Available via npm as the package [@googlemaps/three](https://www.npmjs.com/packa
 npm i @googlemaps/three
 ```
 
-Alternatively you may add the umd package directly to the html document using the unpkg link.
+Alternatively you can load the package directly to the html document using
+unpkg or other CDNs. In this case, make sure to load three.js before loading
+this library:
 
 ```
+<script src="https://unpkg.com/three/build/three.min.js"></script>
 <script src="https://unpkg.com/@googlemaps/three/dist/index.min.js"></script>
-````
+```
 
-When adding via unpkg, the package can be accessed at `google.maps.plugins.three`. A version can be specified by using `https://unpkg.com/@googlemaps/three@VERSION/dist/...`.
+When adding via unpkg, the package can be accessed as
+`google.maps.plugins.three`. A version can be specified by using
+`https://unpkg.com/@googlemaps/three@VERSION/dist/...`.
 
-If you get the error, `Uncaught ReferenceError: three is not defined`, please see [this discussion](https://github.com/googlemaps/js-three/issues/261).
+The third option to use it is via ES-Module imports, similar to how the
+three.js examples work. For this, you first need to specify an
+[importmap](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap)
+(example using unpkg.com, but it works the same way with any other CDN
+or self-hosted files):
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three/build/three.module.js",
+      "@googlemaps/three": "https://unpkg.com/@googlemaps/three/dist/index.esm.js"
+    }
+  }
+</script>
+```
+
+In order to support browsers that don't yet implement importmap, you can
+use the [es-module-shims package](https://github.com/guybedford/es-module-shims).
+
+After that, you can use three.js and the ThreeJSOverlayView like you would when
+using a bundler.
+
+```html
+<script type="module">
+  import * as THREE from "three";
+  import { ThreeJSOverlayView } from "@googlemaps/three";
+
+  // ...
+</script>
+```
 
 ## Documentation
 
@@ -48,7 +81,7 @@ Checkout the the reference [documentation](https://googlemaps.github.io/js-three
 The following example provides a skeleton for adding objects to the map with this library.
 
 ```js
-import * as THREE from 'three';
+import * as THREE from "three";
 
 const map = new google.maps.Map(document.getElementById("map"), mapOptions);
 // instantiate a ThreeJS Scene
@@ -57,7 +90,7 @@ const scene = new THREE.Scene();
 // Create a box mesh
 const box = new THREE.Mesh(
   new THREE.BoxGeometry(10, 50, 10),
-  new THREE.MeshNormalMaterial(),
+  new THREE.MeshNormalMaterial()
 );
 
 // set position at center of map
@@ -71,7 +104,7 @@ scene.add(box);
 // instantiate the ThreeJS Overlay with the scene and map
 new ThreeJSOverlayView({
   scene,
-  map
+  map,
 });
 
 // rotate the box using requestAnimationFrame
@@ -88,7 +121,6 @@ requestAnimationFrame(animate);
 This adds a box to the map.
 
 <img src="https://storage.googleapis.com/geo-devrel-public-buckets/box.png" alt="threejs box on map" width="400"/>
-
 
 ## Demos
 
