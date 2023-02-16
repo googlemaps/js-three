@@ -17,12 +17,22 @@
   },
   "license": "Apache-2.0",
   "author": "Justin Poehnelt",
+  "source": "src/index.ts",
   "main": "dist/index.umd.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.umd.js",
+      "umd": "./dist/index.umd.js",
+      "browser": "./dist/index.esm.js"
+    }
+  },
   "unpkg": "dist/index.min.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/*"
+    "/src",
+    "/dist"
   ],
   "scripts": {
     "build:examples": "rm -rf public && rollup -c rollup.config.examples.js",
@@ -33,6 +43,9 @@
     "start": "rollup -c rollup.config.examples.js -w",
     "test": "jest src/*",
     "test:e2e": "jest --passWithNoTests e2e/*"
+  },
+  "peerDependencies": {
+    "three": "*"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",

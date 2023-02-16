@@ -42,6 +42,5 @@ new Loader(LOADER_OPTIONS).load().then(() => {
     anchor: { ...mapOptions.center, altitude: 0 },
     scene,
     map,
-    THREE,
   });
 });
