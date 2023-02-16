@@ -55,7 +55,6 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   const overlay = new ThreeJSOverlayView({
     scene,
     map,
-    THREE,
   });
 
   // rotate the box using requestAnimationFrame

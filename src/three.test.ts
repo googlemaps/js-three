@@ -34,7 +34,7 @@ beforeEach(() => {
 });
 
 test("instantiates with defaults", () => {
-  const overlay = new ThreeJSOverlayView({ THREE });
+  const overlay = new ThreeJSOverlayView();
 
   expect(overlay["overlay"]).toBeDefined();
   expect(overlay["camera"]).toBeInstanceOf(THREE.PerspectiveCamera);
@@ -51,15 +51,7 @@ test("instantiates with defaults", () => {
 });
 
 test("instantiates with minimal THREE", () => {
-  const overlay = new ThreeJSOverlayView({
-    THREE: {
-      Scene: THREE.Scene,
-      WebGLRenderer: THREE.WebGLRenderer,
-      PerspectiveCamera: THREE.PerspectiveCamera,
-      PCFSoftShadowMap: THREE.PCFSoftShadowMap,
-      sRGBEncoding: THREE.sRGBEncoding,
-    },
-  });
+  const overlay = new ThreeJSOverlayView();
 
   expect(overlay["overlay"]).toBeDefined();
   expect(overlay["camera"]).toBeInstanceOf(THREE.PerspectiveCamera);
@@ -83,7 +75,6 @@ test("instantiates with map and calls setMap", () => {
 
   const overlay = new ThreeJSOverlayView({
     map,
-    THREE,
   });
 
   expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
@@ -94,14 +85,14 @@ test("setMap is called on overlay", () => {
     document.createElement("div"),
     {}
   ) as unknown as google.maps.Map;
-  const overlay = new ThreeJSOverlayView({ THREE });
+  const overlay = new ThreeJSOverlayView();
   overlay.setMap(map);
 
   expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
 });
 
 test("onContext lost disposes of renderer", () => {
-  const overlay = new ThreeJSOverlayView({ THREE });
+  const overlay = new ThreeJSOverlayView();
 
   overlay.onContextLost(); // noop
   expect(overlay["renderer"]).toBeNull();
@@ -118,21 +109,21 @@ test("onContext lost disposes of renderer", () => {
 });
 
 test("getMap is called on overlay", () => {
-  const overlay = new ThreeJSOverlayView({ THREE });
+  const overlay = new ThreeJSOverlayView();
   overlay.getMap();
 
   expect(overlay["overlay"].getMap).toHaveBeenCalledWith();
 });
 
 test("requestRedraw is called on overlay", () => {
-  const overlay = new ThreeJSOverlayView({ THREE });
+  const overlay = new ThreeJSOverlayView();
   overlay.requestRedraw();
 
   expect(overlay["overlay"].requestRedraw).toHaveBeenCalledWith();
 });
 
 test("addListener is called on overlay", () => {
-  const overlay = new ThreeJSOverlayView({ THREE });
+  const overlay = new ThreeJSOverlayView();
   const handler = () => {};
   const eventName = "foo";
 

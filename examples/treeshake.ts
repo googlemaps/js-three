@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Scene,
-  WebGLRenderer,
-  PerspectiveCamera,
-  PCFSoftShadowMap,
-  sRGBEncoding,
-  Mesh,
-  BoxGeometry,
-  MeshNormalMaterial,
-  MathUtils,
-} from "three";
+import { Scene, Mesh, BoxGeometry, MeshNormalMaterial, MathUtils } from "three";
 
 import { LOADER_OPTIONS, MAP_ID } from "./config";
 import { ThreeJSOverlayView, latLngToVector3 } from "../src";
@@ -63,13 +53,6 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   const overlay = new ThreeJSOverlayView({
     scene,
     map,
-    THREE: {
-      Scene,
-      WebGLRenderer,
-      PerspectiveCamera,
-      PCFSoftShadowMap,
-      sRGBEncoding,
-    },
   });
 
   // rotate the box using requestAnimationFrame

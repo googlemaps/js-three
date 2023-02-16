@@ -40,6 +40,5 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   new ThreeJSOverlayView({
     scene,
     map,
-    THREE,
   });
 });
