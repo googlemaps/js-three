@@ -94,18 +94,24 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
   }
 
   /**
-   * Override this method to handle any GL state updates outside the
+   * Overwrite this method to handle any GL state updates outside the
    * render animation frame.
    * @param options
    */
   public onStateUpdate(options: google.maps.WebGLStateOptions): void {}
 
   /**
-   * Override this method to fetch or create intermediate data structures
+   * Overwrite this method to fetch or create intermediate data structures
    * before the overlay is drawn that don’t require immediate access to the
    * WebGL rendering context.
    */
   public onAdd(): void {}
+
+  /**
+   * Overwrite this method to update your scene just before a new frame is
+   * drawn.
+   */
+  public onBeforeDraw(): void {}
 
   /**
    * This method is called when the overlay is removed from the map with
@@ -207,11 +213,12 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
 
     gl.disable(gl.SCISSOR_TEST);
 
-    this.requestRedraw();
+    this.onBeforeDraw();
     this.renderer.render(this.scene, this.camera);
-
     // reset state using renderer.resetState() and not renderer.state.reset()
     this.renderer.resetState();
+
+    this.requestRedraw();
   }
 
   // MVCObject interface forwarded to the overlay
