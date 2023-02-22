@@ -50,23 +50,6 @@ test("instantiates with defaults", () => {
   expect(overlay["overlay"].onDraw).toBeDefined();
 });
 
-test("instantiates with minimal THREE", () => {
-  const overlay = new ThreeJSOverlayView();
-
-  expect(overlay["overlay"]).toBeDefined();
-  expect(overlay["camera"]).toBeInstanceOf(THREE.PerspectiveCamera);
-
-  expect(overlay.scene).toBeInstanceOf(THREE.Scene);
-  expect(overlay.scene.rotation.x).toEqual(Math.PI / 2);
-
-  // required hooks must be defined
-  expect(overlay["overlay"].onAdd).toBeDefined();
-  expect(overlay["overlay"].onRemove).toBeDefined();
-  expect(overlay["overlay"].onContextLost).toBeDefined();
-  expect(overlay["overlay"].onContextRestored).toBeDefined();
-  expect(overlay["overlay"].onDraw).toBeDefined();
-});
-
 test("instantiates with map and calls setMap", () => {
   const map = new Map(
     document.createElement("div"),
