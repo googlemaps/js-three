@@ -40,7 +40,6 @@ test("instantiates with defaults", () => {
   expect(overlay["camera"]).toBeInstanceOf(THREE.PerspectiveCamera);
 
   expect(overlay.scene).toBeInstanceOf(THREE.Scene);
-  expect(overlay.scene.rotation.x).toEqual(Math.PI / 2);
 
   // required hooks must be defined
   expect(overlay["overlay"].onAdd).toBeDefined();

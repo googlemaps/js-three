@@ -15,23 +15,48 @@
  */
 
 import {
+  Euler,
+  MathUtils,
   PCFSoftShadowMap,
   PerspectiveCamera,
+  Quaternion,
   Scene,
   sRGBEncoding,
+  Vector3,
   WebGLRenderer,
 } from "three";
+import { latLngToVector3Relative, toLatLngAltitudeLiteral } from "./util";
+
+import type { LatLngTypes } from "./util";
+
+const DEFAULT_UP = new Vector3(0, 0, 1);
 
 export interface ThreeJSOverlayViewOptions {
-  /** The anchor for the scene. Defaults to {lat: 0, lng: 0, altitude: 0}. */
+  /**
+   * The anchor for the scene.
+   *
+   * @default {lat: 0, lng: 0, altitude: 0}
+   */
   anchor?: google.maps.LatLngAltitudeLiteral;
-  /** The rotations applied in the camera transformation matrix. Defaults to [0, 0, 0]. */
-  rotation?: Float32Array;
-  /** The scale applied in the camera transformation matrix. Defaults to [1, 1, 1].*/
-  scale?: Float32Array;
-  /** The map can be set at initialization or by calling `setMap(map)`. */
+
+  /**
+   * The axis pointing up in the scene. Can be specified as "Z", "Y" or a
+   * Vector3, in which case the normalized vector will become the up-axis.
+   *
+   * @default "Z"
+   */
+  upAxis?: "Z" | "Y" | Vector3;
+
+  /**
+   * The map the overlay will be added to.
+   * Can be set at initialization or by calling `setMap(map)`.
+   */
   map?: google.maps.Map;
-  /** The scene can be provided. Defaults to `new Scene()`. */
+
+  /**
+   * The scene-object to render in the overlay. If no scene is specified, a
+   * new scene object is created and can be accessed via `overlay.scene`.
+   */
   scene?: Scene;
 }
 
@@ -39,31 +64,28 @@ export interface ThreeJSOverlayViewOptions {
 
 /**
  * Add a [three.js](https://threejs.org) scene as a [Google Maps WebGLOverlayView](http://goo.gle/WebGLOverlayView-ref).
- *
- * **Note**: The scene will be rotated to a default up axis of (0, 1, 0) matching that of three.js.
- * *
  */
 export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
   /**
    * See [[ThreeJSOverlayViewOptions.anchor]]
    */
   public readonly anchor: google.maps.LatLngAltitudeLiteral;
+
   /**
    * See [[ThreeJSOverlayViewOptions.scene]]
    */
   public readonly scene: Scene;
 
   protected readonly camera: PerspectiveCamera;
-  protected readonly scale: Float32Array;
-  protected readonly rotation: Float32Array;
+  protected readonly rotationArray: Float32Array = new Float32Array(3);
+  protected readonly rotationInverse: Quaternion = new Quaternion();
   protected readonly overlay: google.maps.WebGLOverlayView;
   protected renderer: WebGLRenderer;
 
   constructor(options: ThreeJSOverlayViewOptions = {}) {
     const {
       anchor = { lat: 0, lng: 0, altitude: 0 },
-      rotation = new Float32Array([0, 0, 0]),
-      scale = new Float32Array([1, 1, 1]),
+      upAxis = "Z",
       scene,
       map,
     } = options;
@@ -72,12 +94,10 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     this.renderer = null;
     this.camera = null;
     this.anchor = anchor;
-    this.rotation = rotation;
-    this.scale = scale;
-    this.scene = scene ?? new Scene();
 
-    // rotate scene consistent with y up in THREE
-    this.scene.rotation.x = Math.PI / 2;
+    this.setUpAxis(upAxis);
+
+    this.scene = scene ?? new Scene();
 
     this.overlay.onAdd = this.onAdd.bind(this);
     this.overlay.onRemove = this.onRemove.bind(this);
@@ -91,6 +111,37 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     if (map) {
       this.setMap(map);
     }
+  }
+
+  /**
+   * Sets the axis to use as "up" in the scene.
+   * @param axis
+   */
+  public setUpAxis(axis: "Y" | "Z" | Vector3): void {
+    const upVector = new Vector3(0, 0, 1);
+    if (typeof axis !== "string") {
+      upVector.copy(axis);
+    } else {
+      if (axis.toLowerCase() === "y") {
+        upVector.set(0, 1, 0);
+      } else if (axis.toLowerCase() !== "z") {
+        console.warn(`invalid value '${axis}' specified as upAxis`);
+      }
+    }
+
+    upVector.normalize();
+
+    const q = new Quaternion();
+    q.setFromUnitVectors(upVector, DEFAULT_UP);
+
+    // inverse rotation is needed in latLngAltitudeToVector3()
+    this.rotationInverse.copy(q).invert();
+
+    // copy to rotationArray for transformer.fromLatLngAltitude()
+    const euler = new Euler().setFromQuaternion(q, "XYZ");
+    this.rotationArray[0] = MathUtils.radToDeg(euler.x);
+    this.rotationArray[1] = MathUtils.radToDeg(euler.y);
+    this.rotationArray[2] = MathUtils.radToDeg(euler.z);
   }
 
   /**
@@ -208,7 +259,7 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
    */
   public onDraw({ gl, transformer }: google.maps.WebGLDrawOptions): void {
     this.camera.projectionMatrix.fromArray(
-      transformer.fromLatLngAltitude(this.anchor, this.rotation, this.scale)
+      transformer.fromLatLngAltitude(this.anchor, this.rotationArray)
     );
 
     gl.disable(gl.SCISSOR_TEST);
@@ -219,6 +270,25 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     this.renderer.resetState();
 
     this.requestRedraw();
+  }
+
+  /**
+   * Convert coordinates from WGS84 Latitude Longitude to world-space
+   * coordinates while taking the origin and orientation into account.
+   */
+  public latLngAltitudeToVector3(
+    position: LatLngTypes,
+    target = new Vector3()
+  ) {
+    latLngToVector3Relative(
+      toLatLngAltitudeLiteral(position),
+      this.anchor,
+      target
+    );
+
+    target.applyQuaternion(this.rotationInverse);
+
+    return target;
   }
 
   // MVCObject interface forwarded to the overlay
@@ -244,7 +314,7 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
 
   /**
    * Notify all observers of a change on this property. This notifies both
-   * objects that are bound to the object&#39;s property as well as the object
+   * objects that are bound to the object's property as well as the object
    * that it is bound to.
    */
   public notify(key: string): void {
