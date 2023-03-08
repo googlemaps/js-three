@@ -15,9 +15,18 @@
  */
 
 import { Map, initialize } from "@googlemaps/jest-mocks";
-import * as THREE from "three";
 
 import { ThreeJSOverlayView } from "./three";
+import {
+  BoxGeometry,
+  Group,
+  Mesh,
+  PerspectiveCamera,
+  Scene,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+} from "three";
 
 beforeEach(() => {
   initialize();
@@ -37,9 +46,9 @@ test("instantiates with defaults", () => {
   const overlay = new ThreeJSOverlayView();
 
   expect(overlay["overlay"]).toBeDefined();
-  expect(overlay["camera"]).toBeInstanceOf(THREE.PerspectiveCamera);
+  expect(overlay["camera"]).toBeInstanceOf(PerspectiveCamera);
 
-  expect(overlay.scene).toBeInstanceOf(THREE.Scene);
+  expect(overlay.scene).toBeInstanceOf(Scene);
 
   // required hooks must be defined
   expect(overlay["overlay"].onAdd).toBeDefined();
@@ -82,7 +91,7 @@ test("onContext lost disposes of renderer", () => {
   const dispose = jest.fn();
   overlay["renderer"] = {
     dispose,
-  } as unknown as THREE.WebGLRenderer;
+  } as unknown as WebGLRenderer;
 
   overlay.onContextLost();
 
@@ -106,6 +115,7 @@ test("requestRedraw is called on overlay", () => {
 
 test("addListener is called on overlay", () => {
   const overlay = new ThreeJSOverlayView();
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const handler = () => {};
   const eventName = "foo";
 
@@ -114,4 +124,107 @@ test("addListener is called on overlay", () => {
     eventName,
     handler
   );
+});
+
+describe("raycast()", () => {
+  let overlay: ThreeJSOverlayView;
+  let camera: PerspectiveCamera;
+  let box: Mesh<BoxGeometry, never>;
+
+  // these values were taken from a running application and are known to work
+  const projMatrix = [
+    0.024288994132302996, -0.0001544860884193919, -0.00004410021260124961,
+    -0.00004410021260124961, 6.275603421503094e-20, 0.017096574772793482,
+    -0.002943529080808796, -0.002943529080808796, -0.00028262805230606344,
+    -0.01327650198026164, -0.0037899629741724055, -0.0037899629741724055,
+    -0.10144748239547549, 0.2775102128618734, 0.4125525158446316,
+    1.079219172577191,
+  ];
+  const boxPosition = new Vector3(0.12366377626911729, 0, 52.06138372088319);
+  const mouseHitPosition = new Vector2(-0.131, -0.464);
+
+  beforeEach(() => {
+    overlay = new ThreeJSOverlayView();
+
+    // this could be done by providing a mocked CoordinateTransformer
+    // to the onDraw function, but this is arguably easier (although
+    // it's not ideal to access protected members)
+    camera = overlay["camera"];
+    camera.projectionMatrix.fromArray(projMatrix);
+
+    box = new Mesh(new BoxGeometry());
+    box.position.copy(boxPosition);
+  });
+
+  test("returns an empty array for an empty scene", () => {
+    const res = overlay.raycast(new Vector2(0, 0));
+    expect(res).toEqual([]);
+  });
+
+  test("returns correct results in a known to work setting", () => {
+    overlay.scene.add(box);
+    box.updateMatrixWorld(true);
+
+    // check for no hit at [0,0]
+    expect(overlay.raycast(new Vector2(0, 0))).toEqual([]);
+
+    let res;
+
+    // we know where the box would be rendered
+    res = overlay.raycast(mouseHitPosition);
+    expect(res).toHaveLength(1);
+    expect(res[0].object).toBe(box);
+
+    // check that it ignores {recursive:false} here and returns the same result
+    const res2 = overlay.raycast(mouseHitPosition, { recursive: false });
+    expect(res2).toEqual(res);
+
+    // test calls with explicit object-list
+    res = overlay.raycast(mouseHitPosition, [box], { recursive: false });
+    expect(res).toEqual(res);
+
+    const box2 = new Mesh(new BoxGeometry());
+    res = overlay.raycast(mouseHitPosition, [box2]);
+    expect(res).toEqual([]);
+
+    // test recursion
+    const g = new Group();
+    g.add(box);
+    res = overlay.raycast(mouseHitPosition, [g], { recursive: false });
+    expect(res).toEqual([]);
+  });
+
+  test("sets and restores raycaster parameters", () => {
+    const raycaster = overlay["raycaster"];
+
+    const origParams = {};
+    const customParams = {};
+    let currParams = origParams;
+    let intersectParams = null;
+
+    const setParamsMock = jest.fn((v) => (currParams = v));
+    const getParamsMock = jest.fn(() => origParams);
+
+    jest.spyOn(raycaster, "intersectObjects").mockImplementation(() => {
+      intersectParams = currParams;
+      return [];
+    });
+
+    Object.defineProperty(raycaster, "params", {
+      get: getParamsMock,
+      set: setParamsMock,
+    });
+
+    overlay.scene.add(box);
+    box.updateMatrixWorld(true);
+
+    overlay.raycast(mouseHitPosition, { raycasterParameters: customParams });
+
+    expect(setParamsMock).toHaveBeenCalledTimes(2);
+
+    const [[arg1], [arg2]] = setParamsMock.mock.calls;
+    expect(arg1).toBe(customParams);
+    expect(arg2).toBe(origParams);
+    expect(intersectParams).toBe(customParams);
+  });
 });

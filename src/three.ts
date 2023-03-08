@@ -16,12 +16,18 @@
 
 import {
   Euler,
+  Intersection,
   MathUtils,
+  Matrix4,
+  Object3D,
   PCFSoftShadowMap,
   PerspectiveCamera,
   Quaternion,
+  Raycaster,
+  RaycasterParameters,
   Scene,
   sRGBEncoding,
+  Vector2,
   Vector3,
   WebGLRenderer,
 } from "three";
@@ -30,6 +36,31 @@ import { latLngToVector3Relative, toLatLngAltitudeLiteral } from "./util";
 import type { LatLngTypes } from "./util";
 
 const DEFAULT_UP = new Vector3(0, 0, 1);
+
+export interface RaycastOptions {
+  /**
+   * Set to true to also test children of the specified objects for
+   * intersections.
+   *
+   * @default false
+   */
+  recursive?: boolean;
+
+  /**
+   * Update the inverse-projection-matrix before casting the ray (set this
+   * to false if you need to run multiple raycasts for the same frame).
+   *
+   * @default true
+   */
+  updateMatrix?: boolean;
+
+  /**
+   * Additional parameters to pass to the three.js raycaster.
+   *
+   * @see https://threejs.org/docs/#api/en/core/Raycaster.params
+   */
+  raycasterParameters?: RaycasterParameters;
+}
 
 export interface ThreeJSOverlayViewOptions {
   /**
@@ -79,8 +110,11 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
   protected readonly camera: PerspectiveCamera;
   protected readonly rotationArray: Float32Array = new Float32Array(3);
   protected readonly rotationInverse: Quaternion = new Quaternion();
+  protected readonly projectionMatrixInverse = new Matrix4();
+
   protected readonly overlay: google.maps.WebGLOverlayView;
   protected renderer: WebGLRenderer;
+  protected raycaster: Raycaster = new Raycaster();
 
   constructor(options: ThreeJSOverlayViewOptions = {}) {
     const {
@@ -142,6 +176,102 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     this.rotationArray[0] = MathUtils.radToDeg(euler.x);
     this.rotationArray[1] = MathUtils.radToDeg(euler.y);
     this.rotationArray[2] = MathUtils.radToDeg(euler.z);
+  }
+
+  /**
+   * Runs raycasting for the specified screen-coordinates against all objects
+   * in the scene.
+   *
+   * @param p normalized screenspace coordinates of the
+   *   mouse-cursor. x/y are in range [-1, 1], y is pointing up.
+   * @param options raycasting options. In this case the `recursive` option
+   *   has no effect as it is always recursive.
+   * @return the list of intersections
+   */
+  public raycast(p: Vector2, options?: RaycastOptions): Intersection[];
+
+  /**
+   * Runs raycasting for the specified screen-coordinates against the specified
+   * list of objects.
+   *
+   * Note for typescript users: the returned Intersection objects can only be
+   * properly typed for non-recursive lookups (this is handled by the internal
+   * signature below).
+   *
+   * @param p normalized screenspace coordinates of the
+   *   mouse-cursor. x/y are in range [-1, 1], y is pointing up.
+   * @param objects list of objects to test
+   * @param options raycasting options.
+   */
+  public raycast(
+    p: Vector2,
+    objects: Object3D[],
+    options?: RaycastOptions & { recursive: true }
+  ): Intersection[];
+
+  // additional signature to enable typings in returned objects when possible
+  public raycast<T extends Object3D>(
+    p: Vector2,
+    objects: T[],
+    options?:
+      | Omit<RaycastOptions, "recursive">
+      | (RaycastOptions & { recursive: false })
+  ): Intersection<T>[];
+
+  // implemetation
+  public raycast(
+    p: Vector2,
+    optionsOrObjects?: Object3D[] | RaycastOptions,
+    options: RaycastOptions = {}
+  ): Intersection[] {
+    let objects: Object3D[];
+    if (Array.isArray(optionsOrObjects)) {
+      objects = optionsOrObjects || null;
+    } else {
+      objects = [this.scene];
+      options = { ...optionsOrObjects, recursive: true };
+    }
+
+    const {
+      updateMatrix = true,
+      recursive = false,
+      raycasterParameters,
+    } = options;
+
+    // when `raycast()` is called from within the `onBeforeRender()` callback,
+    // the mvp-matrix for this frame has already been computed and stored in
+    // `this.camera.projectionMatrix`.
+    // The mvp-matrix transforms world-space meters to clip-space
+    // coordinates. The inverse matrix created here does the exact opposite
+    // and converts clip-space coordinates to world-space.
+    if (updateMatrix) {
+      this.projectionMatrixInverse.copy(this.camera.projectionMatrix).invert();
+    }
+
+    // create two points (with different depth) from the mouse-position and
+    // convert them into world-space coordinates to set up the ray.
+    this.raycaster.ray.origin
+      .set(p.x, p.y, 0)
+      .applyMatrix4(this.projectionMatrixInverse);
+
+    this.raycaster.ray.direction
+      .set(p.x, p.y, 0.5)
+      .applyMatrix4(this.projectionMatrixInverse)
+      .sub(this.raycaster.ray.origin)
+      .normalize();
+
+    // back up the raycaster parameters
+    const oldRaycasterParams = this.raycaster.params;
+    if (raycasterParameters) {
+      this.raycaster.params = raycasterParameters;
+    }
+
+    const results = this.raycaster.intersectObjects(objects, recursive);
+
+    // reset raycaster params to whatever they were before
+    this.raycaster.params = oldRaycasterParams;
+
+    return results;
   }
 
   /**

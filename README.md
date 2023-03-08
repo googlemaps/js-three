@@ -73,7 +73,7 @@ using a bundler.
 
 Checkout the reference [documentation](https://googlemaps.github.io/js-three/index.html).
 
-## Coordinates, Projection and Anchor-Points
+### Coordinates, Projection and Anchor-Points
 
 The coordinate system within the three.js scene (so-called 'world
 coordinates') is a right-handed coordinate system in z-up orientation.
@@ -105,6 +105,62 @@ the scaling of meters is only accurate in regions close to the equator. This
 can be compensated for by applying a scale factor that depends on the
 latitude of the anchor. This scale factor is factored into the coordinate
 calculations in WebGlOverlayView based on the latitude of the anchor.
+
+### Raycasting and Interactions
+
+If you want to add interactivity to any three.js content, you typically
+have to implement raycasting. We took care of that for you, and the
+ThreeJSOverlayView provides a method `overlay.raycast()` for this. To make
+use of it, you first have to keep track of mouse movements on the map:
+
+```js
+import { Vector2 } from "three";
+
+// ...
+
+const mapDiv = map.getDiv();
+const mousePosition = new Vector2();
+
+map.addListener("mousemove", (ev) => {
+  const { domEvent } = ev;
+  const { left, top, width, height } = mapDiv.getBoundingClientRect();
+
+  const x = domEvent.clientX - left;
+  const y = domEvent.clientY - top;
+
+  mousePosition.x = 2 * (x / width) - 1;
+  mousePosition.y = 1 - 2 * (y / height);
+
+  // since the actual raycasting is performed when the next frame is
+  // rendered, we have to make sure that it will be called for the next frame.
+  overlay.requestRedraw();
+});
+```
+
+With the mouse position being always up to date, you can then use the
+`raycast()` function in the `onBeforeDraw` callback.
+In this example, we change the color of the object under the cursor:
+
+```js
+const DEFAULT_COLOR = 0xffffff;
+const HIGHLIGHT_COLOR = 0xff0000;
+
+let highlightedObject = null;
+
+overlay.onBeforeDraw = () => {
+  const intersections = overlay.raycast(mousePosition);
+  if (highlightedObject) {
+    highlightedObject.material.color.setHex(DEFAULT_COLOR);
+  }
+
+  if (intersections.length === 0) return;
+
+  highlightedObject = intersections[0].object;
+  highlightedObject.material.color.setHex(HIGHLIGHT_COLOR);
+};
+```
+
+The full examples can be found in [`./examples/raycasting.ts`](./examples/raycasting.ts).
 
 ## Example
 
