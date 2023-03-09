@@ -68,7 +68,7 @@ export interface ThreeJSOverlayViewOptions {
    *
    * @default {lat: 0, lng: 0, altitude: 0}
    */
-  anchor?: google.maps.LatLngAltitudeLiteral;
+  anchor?: LatLngTypes;
 
   /**
    * The axis pointing up in the scene. Can be specified as "Z", "Y" or a
@@ -98,15 +98,11 @@ export interface ThreeJSOverlayViewOptions {
  */
 export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
   /**
-   * See [[ThreeJSOverlayViewOptions.anchor]]
-   */
-  public readonly anchor: google.maps.LatLngAltitudeLiteral;
-
-  /**
-   * See [[ThreeJSOverlayViewOptions.scene]]
+   * {@inheritdoc ThreeJSOverlayViewOptions.scene}
    */
   public readonly scene: Scene;
 
+  protected anchor: google.maps.LatLngAltitudeLiteral;
   protected readonly camera: PerspectiveCamera;
   protected readonly rotationArray: Float32Array = new Float32Array(3);
   protected readonly rotationInverse: Quaternion = new Quaternion();
@@ -127,8 +123,8 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     this.overlay = new google.maps.WebGLOverlayView();
     this.renderer = null;
     this.camera = null;
-    this.anchor = anchor;
 
+    this.setAnchor(anchor);
     this.setUpAxis(upAxis);
 
     this.scene = scene ?? new Scene();
@@ -145,6 +141,14 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     if (map) {
       this.setMap(map);
     }
+  }
+
+  /**
+   * Sets the anchor-point.
+   * @param anchor
+   */
+  public setAnchor(anchor: LatLngTypes) {
+    this.anchor = toLatLngAltitudeLiteral(anchor);
   }
 
   /**

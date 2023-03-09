@@ -94,10 +94,24 @@ system and still have the precision to show details in the meters to
 centimeters range.
 
 This is where the anchor point is important. The anchor specifies the
-coordinates (lat/lng/altitude) where the origin of the world-space
+geo-coordinates (lat/lng/altitude) where the origin of the world-space
 coordinate system is, and you should always define it close to where the
 objects are placed in the scene - unless of course you are only working with
 large-scale (city-sized) objects distributed globally.
+
+The anchor-point can be set in the constructor, or by using the
+`setAnchor()`-method (be aware that all object-positions in your scene have
+to be updated when the anchor is changed):
+
+```typescript
+import { ThreeJSOverlayView } from "@googlemaps/three";
+
+const overlay = new ThreeJSOverlayView({
+  anchor: { lat: 37.7793, lng: -122.4192, altitude: 0 },
+});
+
+overlay.setAnchor({ lat: 35.680432, lng: 139.769013, altitude: 0 });
+```
 
 Another reason why setting the anchor close to the objects in the scene
 is generally a good idea: In the mercator map-projection used in Google Maps,
