@@ -16,49 +16,37 @@
 
 import { MathUtils, Vector3 } from "three";
 
-export const EARTH_RADIUS = 6371010;
+export type LatLngTypes =
+  | google.maps.LatLngLiteral
+  | google.maps.LatLng
+  | google.maps.LatLngAltitudeLiteral
+  | google.maps.LatLngAltitude;
+
+// shorthands for math-functions, makes equations more readable
+const { atan, cos, exp, log, tan, PI } = Math;
+const { degToRad, radToDeg } = MathUtils;
+
+export const EARTH_RADIUS = 6371010.0;
 export const WORLD_SIZE = Math.PI * EARTH_RADIUS;
 
-function toLatLngLiteral(
-  latLng: google.maps.LatLngLiteral | google.maps.LatLng
-): google.maps.LatLngLiteral {
-  if (window.google && google.maps && latLng instanceof google.maps.LatLng) {
-    return latLng.toJSON();
+/**
+ * Converts any of the supported position formats into the
+ * google.maps.LatLngAltitudeLiteral format used for the calculations.
+ * @param point
+ */
+export function toLatLngAltitudeLiteral(
+  point: LatLngTypes
+): google.maps.LatLngAltitudeLiteral {
+  if (
+    window.google &&
+    google.maps &&
+    (point instanceof google.maps.LatLng ||
+      point instanceof google.maps.LatLngAltitude)
+  ) {
+    return { altitude: 0, ...point.toJSON() };
   }
-  return latLng as google.maps.LatLngLiteral;
-}
 
-/**
- * Converts latitude and longitude to meters.
- */
-export function latLngToMeters(
-  latLng: google.maps.LatLngLiteral | google.maps.LatLng
-): {
-  x: number;
-  y: number;
-} {
-  latLng = toLatLngLiteral(latLng);
-
-  const x = EARTH_RADIUS * MathUtils.degToRad(latLng.lng);
-  const y =
-    0 -
-    EARTH_RADIUS *
-      Math.log(
-        Math.tan(0.5 * (Math.PI * 0.5 - MathUtils.degToRad(latLng.lat)))
-      );
-  return { x, y };
-}
-
-/**
- * Converts latitude and longitude to world space coordinates with y up.
- */
-export function latLngToVector3(
-  point: google.maps.LatLngLiteral | google.maps.LatLng,
-  target = new Vector3()
-) {
-  const { x, y } = latLngToMeters(point);
-
-  return target.set(x, 0, -y);
+  return { altitude: 0, ...(point as google.maps.LatLngLiteral) };
 }
 
 /**
@@ -66,16 +54,43 @@ export function latLngToVector3(
  * to a reference location with y up.
  */
 export function latLngToVector3Relative(
-  point: google.maps.LatLngLiteral | google.maps.LatLng,
-  reference: google.maps.LatLngLiteral | google.maps.LatLng,
+  point: google.maps.LatLngAltitudeLiteral,
+  reference: google.maps.LatLngAltitudeLiteral,
   target = new Vector3()
 ) {
-  const p = latLngToVector3(point);
-  const r = latLngToVector3(reference);
+  const [px, py] = latLngToXY(point);
+  const [rx, ry] = latLngToXY(reference);
 
-  target.setX(Math.abs(r.x - p.x) * Math.sign(p.x - r.x));
-  target.setY(Math.abs(r.y - p.y) * Math.sign(p.y - r.y));
-  target.setZ(Math.abs(r.z - p.z) * Math.sign(p.z - r.z));
+  target.set(px - rx, py - ry, 0);
+
+  // apply the spherical mercator scale-factor for the reference latitude
+  target.multiplyScalar(cos(degToRad(reference.lat)));
+
+  target.z = point.altitude - reference.altitude;
 
   return target;
+}
+
+/**
+ * Converts WGS84 latitude and longitude to (uncorrected) WebMercator meters.
+ * (WGS84 --> WebMercator (EPSG:3857))
+ */
+export function latLngToXY(position: google.maps.LatLngLiteral): number[] {
+  return [
+    EARTH_RADIUS * degToRad(position.lng),
+    EARTH_RADIUS * log(tan(0.25 * PI + 0.5 * degToRad(position.lat))),
+  ];
+}
+
+/**
+ * Converts WebMercator meters to WGS84 latitude/longitude.
+ * (WebMercator (EPSG:3857) --> WGS84)
+ */
+export function xyToLatLng(p: number[]): google.maps.LatLngLiteral {
+  const [x, y] = p;
+
+  return {
+    lat: radToDeg(PI * 0.5 - 2.0 * atan(exp(-y / EARTH_RADIUS))),
+    lng: radToDeg(x) / EARTH_RADIUS,
+  };
 }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
 import { LOADER_OPTIONS, MAP_ID } from "./config";
 import { ThreeJSOverlayView, WORLD_SIZE } from "../src";
 
 import { Loader } from "@googlemaps/js-api-loader";
+import { AxesHelper, Scene } from "three";
 
 const mapOptions = {
   center: {
@@ -33,12 +33,9 @@ const mapOptions = {
 
 new Loader(LOADER_OPTIONS).load().then(() => {
   const map = new google.maps.Map(document.getElementById("map"), mapOptions);
-  const scene = new THREE.Scene();
+  const scene = new Scene();
 
-  scene.add(new THREE.AxesHelper(WORLD_SIZE));
+  scene.add(new AxesHelper(WORLD_SIZE));
 
-  new ThreeJSOverlayView({
-    scene,
-    map,
-  });
+  new ThreeJSOverlayView({ scene, map });
 });

@@ -11,7 +11,10 @@
 
 ## Description
 
-Add [three.js](https://threejs.org) objects to Google Maps Platform JS. The library provides a `ThreeJSOverlayView` class extending `google.maps.WebGLOverlayView` and utility functions such as `latLngToMeters`, `latLngToVector3`, and `latLngToVector3Relative`, for converting latitude and longitude to vectors in the mercator coordinate space.
+Add [three.js](https://threejs.org) objects to Google Maps Platform JS. The
+library provides a `ThreeJSOverlayView` class extending `google.maps.WebGLOverlayView`
+and utility functions for converting geo-coordinates (latitude/longitude) to
+vectors in the coordinate system used by three.js.
 
 ## Install
 
@@ -68,13 +71,96 @@ using a bundler.
 
 ## Documentation
 
-Checkout the the reference [documentation](https://googlemaps.github.io/js-three/index.html).
+Checkout the reference [documentation](https://googlemaps.github.io/js-three/index.html).
 
-> Note: All methods and objects in this library follow a default up axis of (0, 1, 0), y up, matching that of three.js.
+### Coordinates, Projection and Anchor-Points
 
-<img src="https://storage.googleapis.com/geo-devrel-public-buckets/orientation.jpg" alt="orientation of axes" width="400"/>
+The coordinate system within the three.js scene (so-called 'world
+coordinates') is a right-handed coordinate system in z-up orientation.
+The y-axis is pointing true north, and the x-axis is pointing east. The
+units are meters. So the point `new Vector3(0, 50, 10)` is 10 meters
+above ground and 50 meters east of the specified anchor point.
 
-> Note: You must pass a reference to THREE in the constructor of the `ThreeJSOverlayView` class. It may be beneficial to pass a subset of THREE to better enable tree shaking.
+> The up-axis used in this library is the z-axis (+x is east
+> and +y is north), which is different from the y-up orientation normally
+> used in three. If you prefer the three.js orientation with the y axis
+> pointing up, use `new ThreeJSOverlayView({upAxis:'Y'})` when creating the
+> overlay.
+
+All computations on the GPU related to the position use float32 numbers, so
+the precision is limited to about 7 decimal digits. Since the world
+has a circumference of about 40M meters, we cannot use a global reference
+system and still have the precision to show details in the meters to
+centimeters range.
+
+This is where the anchor point is important. The anchor specifies the
+coordinates (lat/lng/altitude) where the origin of the world-space
+coordinate system is, and you should always define it close to where the
+objects are placed in the scene - unless of course you are only working with
+large-scale (city-sized) objects distributed globally.
+
+Another reason why setting the anchor close to the objects in the scene
+is generally a good idea: In the mercator map-projection used in Google Maps,
+the scaling of meters is only accurate in regions close to the equator. This
+can be compensated for by applying a scale factor that depends on the
+latitude of the anchor. This scale factor is factored into the coordinate
+calculations in WebGlOverlayView based on the latitude of the anchor.
+
+### Raycasting and Interactions
+
+If you want to add interactivity to any three.js content, you typically
+have to implement raycasting. We took care of that for you, and the
+ThreeJSOverlayView provides a method `overlay.raycast()` for this. To make
+use of it, you first have to keep track of mouse movements on the map:
+
+```js
+import { Vector2 } from "three";
+
+// ...
+
+const mapDiv = map.getDiv();
+const mousePosition = new Vector2();
+
+map.addListener("mousemove", (ev) => {
+  const { domEvent } = ev;
+  const { left, top, width, height } = mapDiv.getBoundingClientRect();
+
+  const x = domEvent.clientX - left;
+  const y = domEvent.clientY - top;
+
+  mousePosition.x = 2 * (x / width) - 1;
+  mousePosition.y = 1 - 2 * (y / height);
+
+  // since the actual raycasting is performed when the next frame is
+  // rendered, we have to make sure that it will be called for the next frame.
+  overlay.requestRedraw();
+});
+```
+
+With the mouse position being always up to date, you can then use the
+`raycast()` function in the `onBeforeDraw` callback.
+In this example, we change the color of the object under the cursor:
+
+```js
+const DEFAULT_COLOR = 0xffffff;
+const HIGHLIGHT_COLOR = 0xff0000;
+
+let highlightedObject = null;
+
+overlay.onBeforeDraw = () => {
+  const intersections = overlay.raycast(mousePosition);
+  if (highlightedObject) {
+    highlightedObject.material.color.setHex(DEFAULT_COLOR);
+  }
+
+  if (intersections.length === 0) return;
+
+  highlightedObject = intersections[0].object;
+  highlightedObject.material.color.setHex(HIGHLIGHT_COLOR);
+};
+```
+
+The full examples can be found in [`./examples/raycasting.ts`](./examples/raycasting.ts).
 
 ## Example
 
@@ -88,32 +174,29 @@ import { ThreeJSOverlayView, latLngToVector3 } from "@googlemaps/three";
 // const { ThreeJSOverlayView, latLngToVector3 } = google.maps.plugins.three;
 
 const map = new google.maps.Map(document.getElementById("map"), mapOptions);
-// instantiate a ThreeJS Scene
-const scene = new THREE.Scene();
+const overlay = new ThreeJSOverlayView({
+  map,
+  upAxis: "Y",
+  anchor: mapOptions.center,
+});
 
-// Create a box mesh
+// create a box mesh
 const box = new THREE.Mesh(
   new THREE.BoxGeometry(10, 50, 10),
-  new THREE.MeshNormalMaterial()
+  new THREE.MeshMatcapMaterial()
 );
+// move the box up so the origin of the box is at the bottom
+box.geometry.translateY(25);
 
 // set position at center of map
-box.position.copy(latLngToVector3(mapOptions.center));
-// set position vertically
-box.position.setY(25);
+box.position.copy(overlay.latLngAltitudeToVector3(mapOptions.center));
 
 // add box mesh to the scene
-scene.add(box);
-
-// instantiate the ThreeJS Overlay with the scene and map
-new ThreeJSOverlayView({
-  scene,
-  map,
-});
+overlay.scene.add(box);
 
 // rotate the box using requestAnimationFrame
 const animate = () => {
-  box.rotateY(MathUtils.degToRad(0.1));
+  box.rotateY(THREE.MathUtils.degToRad(0.1));
 
   requestAnimationFrame(animate);
 };

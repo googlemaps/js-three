@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
 import { LOADER_OPTIONS, MAP_ID } from "./config";
-import { ThreeJSOverlayView, latLngToVector3 } from "../src";
+import { ThreeJSOverlayView } from "../src";
 
 import { Loader } from "@googlemaps/js-api-loader";
+import { BoxGeometry, MathUtils, Mesh, MeshMatcapMaterial } from "three";
 
 const mapOptions = {
   center: {
-    lng: -122.34378755092621,
-    lat: 47.607465080615476,
+    lng: -122.343787,
+    lat: 47.607465,
   },
   mapId: MAP_ID,
   zoom: 15,
@@ -32,34 +32,29 @@ const mapOptions = {
 };
 
 new Loader(LOADER_OPTIONS).load().then(() => {
-  // instantiate the map
+  // create the map and ThreeJS Overlay
   const map = new google.maps.Map(document.getElementById("map"), mapOptions);
-  // instantiate a ThreeJS Scene
-  const scene = new THREE.Scene();
+  const overlay = new ThreeJSOverlayView({ map });
 
   // Create a box mesh
-  const box = new THREE.Mesh(
-    new THREE.BoxGeometry(10, 50, 10),
-    new THREE.MeshNormalMaterial()
+  const box = new Mesh(
+    new BoxGeometry(100, 200, 500),
+    new MeshMatcapMaterial()
   );
 
   // set position at center of map
-  box.position.copy(latLngToVector3(mapOptions.center));
+  const pos = overlay.latLngAltitudeToVector3(mapOptions.center);
+  box.position.copy(pos);
+
   // set position vertically
-  box.position.setY(25);
+  box.position.z = 25;
 
   // add box mesh to the scene
-  scene.add(box);
-
-  // instantiate the ThreeJS Overlay with the scene and map
-  const overlay = new ThreeJSOverlayView({
-    scene,
-    map,
-  });
+  overlay.scene.add(box);
 
   // rotate the box using requestAnimationFrame
   const animate = () => {
-    box.rotateY(THREE.MathUtils.degToRad(0.1));
+    box.rotateZ(MathUtils.degToRad(0.1));
 
     requestAnimationFrame(animate);
   };
