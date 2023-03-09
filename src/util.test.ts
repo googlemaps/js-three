@@ -14,15 +14,51 @@
  * limitations under the License.
  */
 
-import { LatLng, initialize } from "@googlemaps/jest-mocks";
-import {
-  latLngToMeters,
-  latLngToVector3,
-  latLngToVector3Relative,
-} from "./util";
+import { initialize } from "@googlemaps/jest-mocks";
+import { latLngToXY, latLngToVector3Relative } from "./util";
 
 beforeEach(() => {
   initialize();
+
+  // fixme: google.maps.LatLngAltitude is missing in the jest-mocks package,
+  //   remove this when that's no longer the case.
+  google.maps.LatLngAltitude = class LatLngAltitude
+    implements google.maps.LatLngAltitude
+  {
+    public altitude = 0;
+    public lat = 0;
+    public lng = 0;
+
+    constructor(
+      value:
+        | google.maps.LatLng
+        | google.maps.LatLngLiteral
+        | google.maps.LatLngAltitude
+        | google.maps.LatLngAltitudeLiteral,
+      noClampNoWrap = false
+    ) {
+      if (value instanceof google.maps.LatLng) {
+        this.lat = value.lat();
+        this.lng = value.lng();
+      } else {
+        this.lat = value.lat;
+        this.lng = value.lng;
+        this.altitude = (value as google.maps.LatLngAltitude).altitude || 0;
+      }
+    }
+
+    public equals(other: google.maps.LatLngAltitude | null): boolean {
+      return (
+        this.altitude === other.altitude &&
+        this.lat === other.lat &&
+        this.lng === other.lng
+      );
+    }
+
+    public toJSON(): google.maps.LatLngAltitudeLiteral {
+      return { lat: this.lat, lng: this.lng, altitude: this.altitude };
+    }
+  };
 });
 
 test.each([
@@ -50,40 +86,14 @@ test.each([
     { lng: 151.2093, lat: -33.8688 },
     { x: 16813733.4125, y: -4006716.49009 },
   ],
-  [new LatLng({ lng: 0, lat: 0 }), { x: 0, y: 0 }],
-])("latLngToMeters is correct", (latLng, expected) => {
-  const { x, y } = latLngToMeters(latLng);
-  expect(x).toBeCloseTo(expected.x);
-  expect(y).toBeCloseTo(expected.y);
-});
-
-test.each([
-  [
-    { lng: -90, lat: 45 },
-    { x: -10007559.105973555, y: 5615239.936637378 },
-  ],
-  [
-    { lng: 90, lat: -45 },
-    { x: 10007559.105973555, y: -5615239.936637378 },
-  ],
-  [
-    { lng: 90, lat: 45 },
-    { x: 10007559.105973555, y: 5615239.936637378 },
-  ],
-  [
-    { lng: -90, lat: -45 },
-    { x: -10007559.105973555, y: -5615239.936637378 },
-  ],
-  [
-    { lng: 0, lat: -1 },
-    { x: 0, y: -111200.74693490694 },
-  ],
-])("latLngToVector3 is correct", (latLng, projected) => {
-  const vector = latLngToVector3(latLng);
-  expect(vector.x).toBeCloseTo(projected.x);
-  expect(vector.y).toBeCloseTo(0);
-  expect(vector.z).toBeCloseTo(-projected.y);
-});
+])(
+  "latLngToXY is correct",
+  (latLng: google.maps.LatLngLiteral, expected: { x: number; y: number }) => {
+    const [x, y] = latLngToXY(latLng);
+    expect(x).toBeCloseTo(expected.x);
+    expect(y).toBeCloseTo(expected.y);
+  }
+);
 
 test.each([
   // 0 same
@@ -97,8 +107,8 @@ test.each([
     latLng: { lat: 0, lng: 0 },
     reference: { lat: -1, lng: 1 },
     relative: {
-      x: -111195.10117748393,
-      y: 111200.74693490694,
+      x: -111178.17,
+      y: 111183.81,
     },
   },
   // 2 northeast of reference
@@ -106,8 +116,8 @@ test.each([
     latLng: { lat: 0, lng: 2 },
     reference: { lat: -1, lng: 1 },
     relative: {
-      x: 111195.10117748393,
-      y: 111200.74693490694,
+      x: 111178.17,
+      y: 111183.81,
     },
   },
   // 3 southeast of reference
@@ -115,8 +125,8 @@ test.each([
     latLng: { lat: -2, lng: 2 },
     reference: { lat: -1, lng: 1 },
     relative: {
-      x: 111195.10117748393,
-      y: -111234.63180200469,
+      x: 111178.17,
+      y: -111217.69,
     },
   },
   // 4 southwest of reference
@@ -124,24 +134,27 @@ test.each([
     latLng: { lat: -2, lng: 0 },
     reference: { lat: -1, lng: 1 },
     relative: {
-      x: -111195.10117748393,
-      y: -111234.63180200469,
+      x: -111178.17,
+      y: -111217.69,
     },
   },
   {
-    latLng: { lat: 48.86116799396176, lng: 2.3241970462324497 }, // x: 258728.43168982657, y: 6251337.255028437
-    reference: { lat: 48.86267605556572, lng: 2.3190953037457054 }, // x: 258160.50831404378, y: 6251592.434839309
+    latLng: { lat: 48.861168, lng: 2.324197 },
+    reference: { lat: 48.862676, lng: 2.319095 },
     relative: {
-      x: 567.288771994994,
-      y: -254.89467016328126,
+      x: 373.22,
+      y: -167.68,
     },
   },
 ])(
   "latLngToVector3Relative is correct: %# %j",
   ({ latLng, reference, relative }) => {
-    const vector = latLngToVector3Relative(latLng, reference);
-    expect(vector.x).toBeCloseTo(relative.x);
-    expect(vector.y).toBeCloseTo(0);
-    expect(vector.z).toBeCloseTo(-relative.y);
+    const vector = latLngToVector3Relative(
+      { ...latLng, altitude: 0 },
+      { ...reference, altitude: 0 }
+    );
+    expect(vector.x).toBeCloseTo(relative.x, 2);
+    expect(vector.y).toBeCloseTo(relative.y, 2);
+    expect(vector.z).toBeCloseTo(0, 2);
   }
 );
