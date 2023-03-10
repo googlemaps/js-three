@@ -89,6 +89,20 @@ export interface ThreeJSOverlayViewOptions {
    * new scene object is created and can be accessed via `overlay.scene`.
    */
   scene?: Scene;
+
+  /**
+   * The animation mode controls when the overlay will redraw, either
+   * continuously (`always`) or on demand (`ondemand`). When using the
+   * on demand mode, the overlay will re-render whenever the map renders
+   * (camera movements) or when `requestRedraw()` is called.
+   *
+   * To achieve animations in this mode, you can either use an outside
+   * animation-loop that calls `requestRedraw()` as long as needed or call
+   * `requestRedraw()` from within the `onBeforeRender` function to
+   *
+   * @default "ondemand"
+   */
+  animationMode?: "always" | "ondemand";
 }
 
 /* eslint-disable @typescript-eslint/no-empty-function */
@@ -102,6 +116,10 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
    */
   public readonly scene: Scene;
 
+  /** {@inheritDoc ThreeJSOverlayViewOptions.animationMode} */
+  public animationMode: "always" | "ondemand" = "ondemand";
+
+  /** {@inheritDoc ThreeJSOverlayViewOptions.anchor} */
   protected anchor: google.maps.LatLngAltitudeLiteral;
   protected readonly camera: PerspectiveCamera;
   protected readonly rotationArray: Float32Array = new Float32Array(3);
@@ -118,11 +136,13 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
       upAxis = "Z",
       scene,
       map,
+      animationMode = "ondemand",
     } = options;
 
     this.overlay = new google.maps.WebGLOverlayView();
     this.renderer = null;
     this.camera = null;
+    this.animationMode = animationMode;
 
     this.setAnchor(anchor);
     this.setUpAxis(upAxis);
@@ -399,11 +419,11 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     gl.disable(gl.SCISSOR_TEST);
 
     this.onBeforeDraw();
+
     this.renderer.render(this.scene, this.camera);
-    // reset state using renderer.resetState() and not renderer.state.reset()
     this.renderer.resetState();
 
-    this.requestRedraw();
+    if (this.animationMode === "always") this.requestRedraw();
   }
 
   /**
