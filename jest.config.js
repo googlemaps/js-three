@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-module.exports = {
-  transform: {
-    "^.+\\.tsx?$": "ts-jest",
-  },
+export default {
+  roots: ["<rootDir>/src"],
+  preset: "ts-jest",
   collectCoverage: true,
   testPathIgnorePatterns: ["/dist/"],
+  testEnvironment: "jsdom",
 };

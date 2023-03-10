@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import fs from "node:fs";
+import path from "node:path";
+import * as url from "node:url";
 
 import html, { makeHtmlAttributes } from "@rollup/plugin-html";
 
 import commonjs from "@rollup/plugin-commonjs";
-import fs from "fs";
+
 import jsonNodeResolve from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
-import path from "path";
+
 import typescript from "@rollup/plugin-typescript";
 
 const template = ({ attributes, files, meta, publicPath, title }) => {
@@ -69,15 +72,21 @@ const template = ({ attributes, files, meta, publicPath, title }) => {
 
 const typescriptOptions = {
   tsconfig: "tsconfig.examples.json",
+  compilerOptions: {
+    sourceMap: true,
+    inlineSources: true,
+  },
 };
 
+const dirname = url.fileURLToPath(new URL(".", import.meta.url));
 const examples = fs
-  .readdirSync(path.join(__dirname, "examples"))
+  .readdirSync(path.join(dirname, "examples"))
   .filter((f) => f !== "config.ts")
   .map((f) => f.slice(0, f.length - 3));
 
 export default examples.map((name) => ({
   input: `examples/${name}.ts`,
+
   plugins: [
     typescript(typescriptOptions),
     commonjs(),
@@ -86,7 +95,7 @@ export default examples.map((name) => ({
   ],
   output: {
     dir: `public/${name}`,
-    sourcemap: false,
+    sourcemap: "inline",
     plugins: [
       html({
         fileName: `index.html`,
