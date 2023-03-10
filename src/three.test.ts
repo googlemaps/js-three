@@ -20,6 +20,7 @@ import { ThreeJSOverlayView } from "./three";
 import {
   BoxGeometry,
   Group,
+  Light,
   Mesh,
   PerspectiveCamera,
   Scene,
@@ -124,6 +125,30 @@ test("addListener is called on overlay", () => {
     eventName,
     handler
   );
+});
+
+describe("addDefaultLighting()", () => {
+  test("lights are added to the default scene", () => {
+    const overlay = new ThreeJSOverlayView();
+
+    const lights: Light[] = [];
+    overlay.scene.traverse((o) => {
+      if ((o as Light).isLight) lights.push(o as Light);
+    });
+
+    expect(lights).not.toHaveLength(0);
+  });
+
+  test("addDefaultLighting:false", () => {
+    const overlay = new ThreeJSOverlayView({ addDefaultLighting: false });
+
+    const lights: Light[] = [];
+    overlay.scene.traverse((o) => {
+      if ((o as Light).isLight) lights.push(o as Light);
+    });
+
+    expect(lights).toHaveLength(0);
+  });
 });
 
 describe("raycast()", () => {
