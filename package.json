@@ -44,7 +44,7 @@
     "start": "run-p start:*",
     "start:rollup": "rollup -c rollup.config.examples.js -w --no-watch.clearScreen",
     "start:server": "http-server ./public",
-    "test": "jest src/*",
+    "test": "jest --coverage=true src/*",
     "test:e2e": "jest --passWithNoTests e2e/*"
   },
   "peerDependencies": {

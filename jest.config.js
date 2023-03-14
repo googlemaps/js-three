@@ -17,7 +17,6 @@
 export default {
   roots: ["<rootDir>/src"],
   preset: "ts-jest",
-  collectCoverage: true,
   testPathIgnorePatterns: ["/dist/"],
   testEnvironment: "jsdom",
 };
