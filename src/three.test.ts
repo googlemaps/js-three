@@ -14,117 +14,332 @@
  * limitations under the License.
  */
 
-import { Map, initialize } from "@googlemaps/jest-mocks";
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { ThreeJSOverlayView } from "./three";
+// prevent "WARNING: Multiple instances of Three.js being imported.” when
+// importing three.js
+Object.defineProperty(window, "__THREE__", {
+  get: () => null,
+  set: () => null,
+  configurable: false,
+});
+
+import "jest-extended";
+import { initialize, Map } from "@googlemaps/jest-mocks";
+
+import { ThreeJSOverlayView, ThreeJSOverlayViewOptions } from "./three";
+import createContext from "gl";
+
+import * as util from "./util";
+
 import {
   BoxGeometry,
+  Camera,
   Group,
   Light,
+  Matrix4,
   Mesh,
+  Object3D,
   PerspectiveCamera,
   Scene,
   Vector2,
   Vector3,
+  Vector4,
   WebGLRenderer,
 } from "three";
+
+// setup mocked dependencies
+jest.mock("./util");
 
 beforeEach(() => {
   initialize();
   google.maps.WebGLOverlayView = jest.fn().mockImplementation(() => {
-    return {
-      getMap: jest.fn(),
-      setMap: jest.fn(),
-      requestRedraw: jest.fn(),
-      addListener: jest.fn().mockImplementation(() => {
-        return {} as google.maps.MapsEventListener;
-      }),
+    return new (class extends google.maps.MVCObject {
+      getMap = jest.fn();
+      setMap = jest.fn();
+      requestRedraw = jest.fn();
+      requestStateUpdate = jest.fn();
+      addListener = jest.fn().mockImplementation(() => {
+        return { remove: jest.fn() } as google.maps.MapsEventListener;
+      });
+    })();
+  });
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
+describe("basic functions", () => {
+  test("instantiates with defaults", () => {
+    const overlay = new ThreeJSOverlayView();
+
+    expect(overlay["overlay"]).toBeDefined();
+    expect(overlay["camera"]).toBeInstanceOf(PerspectiveCamera);
+
+    expect(overlay.scene).toBeInstanceOf(Scene);
+
+    // required hooks must be defined
+    expect(overlay["overlay"].onAdd).toBeDefined();
+    expect(overlay["overlay"].onRemove).toBeDefined();
+    expect(overlay["overlay"].onContextLost).toBeDefined();
+    expect(overlay["overlay"].onContextRestored).toBeDefined();
+    expect(overlay["overlay"].onDraw).toBeDefined();
+  });
+
+  test("instantiates with map and calls setMap", () => {
+    const map = new Map(
+      document.createElement("div"),
+      {}
+    ) as unknown as google.maps.Map;
+
+    const overlay = new ThreeJSOverlayView({
+      map,
+    });
+
+    expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
+  });
+
+  test("setMap is called on overlay", () => {
+    const map = new Map(
+      document.createElement("div"),
+      {}
+    ) as unknown as google.maps.Map;
+    const overlay = new ThreeJSOverlayView();
+    overlay.setMap(map);
+
+    expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
+  });
+
+  test("getMap is called on overlay", () => {
+    const overlay = new ThreeJSOverlayView();
+    overlay.getMap();
+
+    expect(overlay["overlay"].getMap).toHaveBeenCalledWith();
+  });
+
+  test("addListener is called on overlay", () => {
+    const overlay = new ThreeJSOverlayView();
+    const handler = jest.fn();
+    const eventName = "foo";
+
+    expect(overlay.addListener(eventName, handler)).toBeDefined();
+    expect(overlay["overlay"].addListener).toHaveBeenCalledWith(
+      eventName,
+      handler
+    );
+  });
+});
+
+describe("MVCObject interface", () => {
+  let overlay: ThreeJSOverlayView;
+  let webglOverlay: google.maps.WebGLOverlayView;
+
+  beforeEach(() => {
+    overlay = new ThreeJSOverlayView();
+    webglOverlay = overlay["overlay"];
+  });
+
+  test.each([
+    ["bindTo", "eventName", () => void 0, "targetKey", true],
+    ["get", "key"],
+    ["notify", "key"],
+    ["set", "key", "value"],
+    ["setValues", { key: "value" }],
+    ["unbind", "key"],
+    ["unbindAll"],
+  ] as const)(
+    "method '%s' is forwarded to overlay",
+    (method: keyof google.maps.MVCObject, ...args) => {
+      overlay[method].call(overlay, ...args);
+      expect(webglOverlay[method]).toHaveBeenCalledWith(...args);
+    }
+  );
+});
+
+describe("WebGLOverlayView interface", () => {
+  let overlay: ThreeJSOverlayView;
+  let canvas: HTMLCanvasElement;
+  let gl: WebGLRenderingContext;
+  let transformer: google.maps.CoordinateTransformer;
+  const projMatrixArray = new Float64Array([
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+  ]);
+
+  beforeEach(() => {
+    overlay = new ThreeJSOverlayView();
+    // we're using a "real" headless gl context here since
+    // three.js really doesn't want to be mocked.
+    gl = createContext(200, 100);
+    canvas = document.createElement("canvas");
+    canvas.width = 200;
+    canvas.height = 100;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (gl as any).canvas = canvas;
+
+    transformer = {
+      fromLatLngAltitude: jest.fn(() => projMatrixArray),
+      getCameraParams: jest.fn(),
     };
   });
-});
 
-test("instantiates with defaults", () => {
-  const overlay = new ThreeJSOverlayView();
+  test("onContextRestored creates the renderer", () => {
+    overlay.onContextRestored({ gl });
+    const renderer: WebGLRenderer = overlay["renderer"];
+    expect(renderer).toBeDefined();
 
-  expect(overlay["overlay"]).toBeDefined();
-  expect(overlay["camera"]).toBeInstanceOf(PerspectiveCamera);
-
-  expect(overlay.scene).toBeInstanceOf(Scene);
-
-  // required hooks must be defined
-  expect(overlay["overlay"].onAdd).toBeDefined();
-  expect(overlay["overlay"].onRemove).toBeDefined();
-  expect(overlay["overlay"].onContextLost).toBeDefined();
-  expect(overlay["overlay"].onContextRestored).toBeDefined();
-  expect(overlay["overlay"].onDraw).toBeDefined();
-});
-
-test("instantiates with map and calls setMap", () => {
-  const map = new Map(
-    document.createElement("div"),
-    {}
-  ) as unknown as google.maps.Map;
-
-  const overlay = new ThreeJSOverlayView({
-    map,
+    const viewport = renderer.getViewport(new Vector4());
+    expect(viewport.x).toEqual(0);
+    expect(viewport.y).toEqual(0);
+    expect(viewport.width).toEqual(canvas.width);
+    expect(viewport.height).toEqual(canvas.height);
   });
 
-  expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
+  test("onDraw renders the scene and resets the state", () => {
+    overlay.onContextRestored({ gl });
+    const renderer: WebGLRenderer = overlay["renderer"];
+    let scene: Object3D, camera: Camera;
+    const renderSpy = jest
+      .spyOn(renderer, "render")
+      .mockImplementation((s, c) => {
+        scene = s;
+        camera = c;
+      });
+    const resetStateSpy = jest.spyOn(renderer, "resetState");
+
+    overlay.onDraw({ gl, transformer });
+
+    expect(renderSpy).toHaveBeenCalled();
+    expect(scene).toBe(overlay.scene);
+    expect(camera.projectionMatrix).toEqual(
+      new Matrix4().fromArray(projMatrixArray)
+    );
+    expect(resetStateSpy).toHaveBeenCalledAfter(renderSpy);
+  });
+
+  test("onBeforeDraw gets called before render", () => {
+    overlay.onContextRestored({ gl });
+    const renderer: WebGLRenderer = overlay["renderer"];
+    const renderSpy = jest
+      .spyOn(renderer, "render")
+      .mockImplementation(() => void 0);
+
+    overlay.onBeforeDraw = jest.fn();
+    overlay.onDraw({
+      gl,
+      transformer,
+    });
+
+    expect(overlay.onBeforeDraw).toHaveBeenCalled();
+    expect(overlay.onBeforeDraw).toHaveBeenCalledBefore(renderSpy);
+  });
+
+  test("onContextLost disposes of renderer", () => {
+    overlay.onContextRestored({ gl });
+
+    const renderer: WebGLRenderer = overlay["renderer"];
+    const disposeSpy = jest.spyOn(renderer, "dispose");
+    overlay.onContextLost();
+
+    expect(disposeSpy).toHaveBeenCalled();
+    expect(overlay["renderer"]).toBeNull();
+  });
+
+  test("requestRedraw is forwarded to overlay", () => {
+    overlay.requestRedraw();
+
+    expect(overlay["overlay"].requestRedraw).toHaveBeenCalledWith();
+  });
+
+  test("requestStateUpdate is forwarded to overlay", () => {
+    overlay.requestStateUpdate();
+
+    expect(overlay["overlay"].requestStateUpdate).toHaveBeenCalledWith();
+  });
 });
 
-test("setMap is called on overlay", () => {
-  const map = new Map(
-    document.createElement("div"),
-    {}
-  ) as unknown as google.maps.Map;
-  const overlay = new ThreeJSOverlayView();
-  overlay.setMap(map);
+describe("setUpAxis() / scene orientation", () => {
+  const latLngAlt = { lat: 0, lng: 0, altitude: 10 };
 
-  expect(overlay["overlay"].setMap).toHaveBeenCalledWith(map);
+  beforeEach(() => {
+    const mockedUtil = util as jest.Mocked<typeof util>;
+    mockedUtil.latLngToVector3Relative.mockImplementation(
+      (p, r, target = new Vector3()) => {
+        return target.set(1, 2, 3);
+      }
+    );
+  });
+
+  test.each([
+    [undefined, { x: 1, y: 2, z: 3 }],
+    ["Z", { x: 1, y: 2, z: 3 }],
+    ["Y", { x: 1, y: 3, z: -2 }],
+    [new Vector3(1, 0, 0), { x: 3, y: 2, z: -1 }],
+  ])("upAxis: %s", (upAxis, expectedCoords) => {
+    const overlay = new ThreeJSOverlayView({
+      upAxis: upAxis as ThreeJSOverlayViewOptions["upAxis"],
+    });
+
+    const v3 = overlay.latLngAltitudeToVector3(latLngAlt);
+    expect(v3.x).toBeCloseTo(expectedCoords.x, 8);
+    expect(v3.y).toBeCloseTo(expectedCoords.y, 8);
+    expect(v3.z).toBeCloseTo(expectedCoords.z, 8);
+  });
+
+  test("error for invalid upAxis values", () => {
+    const mock = jest.spyOn(console, "warn").mockImplementation(() => void 0);
+    const overlay = new ThreeJSOverlayView({
+      upAxis: "a" as ThreeJSOverlayViewOptions["upAxis"],
+    });
+
+    expect(mock).toHaveBeenCalled();
+
+    // check that the default z-up is used
+    const v3 = overlay.latLngAltitudeToVector3(latLngAlt);
+
+    expect(v3.x).toBeCloseTo(1, 8);
+    expect(v3.y).toBeCloseTo(2, 8);
+    expect(v3.z).toBeCloseTo(3, 8);
+  });
 });
 
-test("onContext lost disposes of renderer", () => {
-  const overlay = new ThreeJSOverlayView();
+describe("latLngAltitudeToVector3()", () => {
+  let mockedUtil: jest.Mocked<typeof util>;
+  beforeEach(() => {
+    mockedUtil = jest.mocked(util);
+    const { latLngToVector3Relative } = mockedUtil;
 
-  overlay.onContextLost(); // noop
-  expect(overlay["renderer"]).toBeNull();
+    latLngToVector3Relative.mockImplementation(
+      (p, r, target = new Vector3()) => {
+        return target.set(1, 2, 3);
+      }
+    );
+  });
 
-  const dispose = jest.fn();
-  overlay["renderer"] = {
-    dispose,
-  } as unknown as WebGLRenderer;
+  test("calls util-functions", () => {
+    const overlay = new ThreeJSOverlayView({
+      anchor: { lat: 5, lng: 6, altitude: 7 },
+    });
+    const p = { lat: 0, lng: 0, altitude: 0 };
+    const v3 = overlay.latLngAltitudeToVector3(p);
 
-  overlay.onContextLost();
+    expect(mockedUtil.latLngToVector3Relative).toHaveBeenCalled();
+    expect(v3).toEqual(new Vector3(1, 2, 3));
+  });
 
-  expect(dispose).toHaveBeenCalled();
-  expect(overlay["renderer"]).toBeNull();
-});
+  test("writes value to target parameter", () => {
+    const overlay = new ThreeJSOverlayView({
+      anchor: { lat: 5, lng: 6, altitude: 7 },
+    });
+    const p = { lat: 0, lng: 0, altitude: 0 };
+    const t = new Vector3();
+    const v3 = overlay.latLngAltitudeToVector3(p, t);
 
-test("getMap is called on overlay", () => {
-  const overlay = new ThreeJSOverlayView();
-  overlay.getMap();
-
-  expect(overlay["overlay"].getMap).toHaveBeenCalledWith();
-});
-
-test("requestRedraw is called on overlay", () => {
-  const overlay = new ThreeJSOverlayView();
-  overlay.requestRedraw();
-
-  expect(overlay["overlay"].requestRedraw).toHaveBeenCalledWith();
-});
-
-test("addListener is called on overlay", () => {
-  const overlay = new ThreeJSOverlayView();
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const handler = () => {};
-  const eventName = "foo";
-
-  expect(overlay.addListener(eventName, handler)).toBeDefined();
-  expect(overlay["overlay"].addListener).toHaveBeenCalledWith(
-    eventName,
-    handler
-  );
+    expect(mockedUtil.latLngToVector3Relative).toHaveBeenCalled();
+    expect(v3).toBe(t);
+    expect(t).toEqual(new Vector3(1, 2, 3));
+  });
 });
 
 describe("addDefaultLighting()", () => {

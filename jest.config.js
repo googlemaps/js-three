@@ -19,4 +19,5 @@ export default {
   preset: "ts-jest",
   testPathIgnorePatterns: ["/dist/"],
   testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["jest-extended/all"],
 };
