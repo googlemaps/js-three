@@ -24,13 +24,8 @@ Object.defineProperty(window, "__THREE__", {
   configurable: false,
 });
 
-import "jest-extended";
-import { initialize, Map } from "@googlemaps/jest-mocks";
-
-import { ThreeJSOverlayView, ThreeJSOverlayViewOptions } from "./three";
-import createContext from "gl";
-
-import * as util from "./util";
+import { ThreeJSOverlayView, ThreeJSOverlayViewOptions } from "../three";
+import * as util from "../util";
 
 import {
   BoxGeometry,
@@ -48,8 +43,12 @@ import {
   WebGLRenderer,
 } from "three";
 
+import "jest-extended";
+import { initialize, Map } from "@googlemaps/jest-mocks";
+import { createWebGlContext } from "./__utils__/createWebGlContext";
+
 // setup mocked dependencies
-jest.mock("./util");
+jest.mock("../util");
 
 beforeEach(() => {
   initialize();
@@ -159,7 +158,6 @@ describe("MVCObject interface", () => {
 
 describe("WebGLOverlayView interface", () => {
   let overlay: ThreeJSOverlayView;
-  let canvas: HTMLCanvasElement;
   let gl: WebGLRenderingContext;
   let transformer: google.maps.CoordinateTransformer;
   const projMatrixArray = new Float64Array([
@@ -168,15 +166,7 @@ describe("WebGLOverlayView interface", () => {
 
   beforeEach(() => {
     overlay = new ThreeJSOverlayView();
-    // we're using a "real" headless gl context here since
-    // three.js really doesn't want to be mocked.
-    gl = createContext(200, 100);
-    canvas = document.createElement("canvas");
-    canvas.width = 200;
-    canvas.height = 100;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (gl as any).canvas = canvas;
+    gl = createWebGlContext();
 
     transformer = {
       fromLatLngAltitude: jest.fn(() => projMatrixArray),
@@ -192,8 +182,8 @@ describe("WebGLOverlayView interface", () => {
     const viewport = renderer.getViewport(new Vector4());
     expect(viewport.x).toEqual(0);
     expect(viewport.y).toEqual(0);
-    expect(viewport.width).toEqual(canvas.width);
-    expect(viewport.height).toEqual(canvas.height);
+    expect(viewport.width).toEqual(gl.canvas.width);
+    expect(viewport.height).toEqual(gl.canvas.height);
   });
 
   test("onDraw renders the scene and resets the state", () => {

@@ -20,7 +20,7 @@ import {
   latLngToVector3Relative,
   toLatLngAltitudeLiteral,
   xyToLatLng,
-} from "./util";
+} from "../util";
 
 beforeEach(() => {
   initialize();
