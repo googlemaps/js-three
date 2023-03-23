@@ -15,7 +15,9 @@
  */
 
 import {
+  DirectionalLight,
   Euler,
+  HemisphereLight,
   Intersection,
   MathUtils,
   Matrix4,
@@ -68,7 +70,7 @@ export interface ThreeJSOverlayViewOptions {
    *
    * @default {lat: 0, lng: 0, altitude: 0}
    */
-  anchor?: google.maps.LatLngAltitudeLiteral;
+  anchor?: LatLngTypes;
 
   /**
    * The axis pointing up in the scene. Can be specified as "Z", "Y" or a
@@ -85,10 +87,30 @@ export interface ThreeJSOverlayViewOptions {
   map?: google.maps.Map;
 
   /**
-   * The scene-object to render in the overlay. If no scene is specified, a
-   * new scene object is created and can be accessed via `overlay.scene`.
+   * The scene object to render in the overlay. If no scene is specified, a
+   * new scene is created and can be accessed via `overlay.scene`.
    */
   scene?: Scene;
+
+  /**
+   * The animation mode controls when the overlay will redraw, either
+   * continuously (`always`) or on demand (`ondemand`). When using the
+   * on demand mode, the overlay will re-render whenever the map renders
+   * (camera movements) or when `requestRedraw()` is called.
+   *
+   * To achieve animations in this mode, you can either use an outside
+   * animation-loop that calls `requestRedraw()` as long as needed or call
+   * `requestRedraw()` from within the `onBeforeRender` function to
+   *
+   * @default "ondemand"
+   */
+  animationMode?: "always" | "ondemand";
+
+  /**
+   * Add default lighting to the scene.
+   * @default true
+   */
+  addDefaultLighting?: boolean;
 }
 
 /* eslint-disable @typescript-eslint/no-empty-function */
@@ -97,16 +119,14 @@ export interface ThreeJSOverlayViewOptions {
  * Add a [three.js](https://threejs.org) scene as a [Google Maps WebGLOverlayView](http://goo.gle/WebGLOverlayView-ref).
  */
 export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
-  /**
-   * See [[ThreeJSOverlayViewOptions.anchor]]
-   */
-  public readonly anchor: google.maps.LatLngAltitudeLiteral;
-
-  /**
-   * See [[ThreeJSOverlayViewOptions.scene]]
-   */
+  /** {@inheritDoc ThreeJSOverlayViewOptions.scene} */
   public readonly scene: Scene;
 
+  /** {@inheritDoc ThreeJSOverlayViewOptions.animationMode} */
+  public animationMode: "always" | "ondemand" = "ondemand";
+
+  /** {@inheritDoc ThreeJSOverlayViewOptions.anchor} */
+  protected anchor: google.maps.LatLngAltitudeLiteral;
   protected readonly camera: PerspectiveCamera;
   protected readonly rotationArray: Float32Array = new Float32Array(3);
   protected readonly rotationInverse: Quaternion = new Quaternion();
@@ -122,16 +142,20 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
       upAxis = "Z",
       scene,
       map,
+      animationMode = "ondemand",
+      addDefaultLighting = true,
     } = options;
 
     this.overlay = new google.maps.WebGLOverlayView();
     this.renderer = null;
     this.camera = null;
-    this.anchor = anchor;
+    this.animationMode = animationMode;
 
+    this.setAnchor(anchor);
     this.setUpAxis(upAxis);
 
     this.scene = scene ?? new Scene();
+    if (addDefaultLighting) this.initSceneLights();
 
     this.overlay.onAdd = this.onAdd.bind(this);
     this.overlay.onRemove = this.onRemove.bind(this);
@@ -145,6 +169,14 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     if (map) {
       this.setMap(map);
     }
+  }
+
+  /**
+   * Sets the anchor-point.
+   * @param anchor
+   */
+  public setAnchor(anchor: LatLngTypes) {
+    this.anchor = toLatLngAltitudeLiteral(anchor);
   }
 
   /**
@@ -395,11 +427,11 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     gl.disable(gl.SCISSOR_TEST);
 
     this.onBeforeDraw();
+
     this.renderer.render(this.scene, this.camera);
-    // reset state using renderer.resetState() and not renderer.state.reset()
     this.renderer.resetState();
 
-    this.requestRedraw();
+    if (this.animationMode === "always") this.requestRedraw();
   }
 
   /**
@@ -478,5 +510,19 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
    */
   public unbindAll(): void {
     this.overlay.unbindAll();
+  }
+
+  /**
+   * Creates lights (directional and hemisphere light) to illuminate the model
+   * (roughly approximates the lighting of buildings in maps)
+   */
+  private initSceneLights() {
+    const hemiLight = new HemisphereLight(0xffffff, 0x444444, 1);
+    hemiLight.position.set(0, -0.2, 1).normalize();
+
+    const dirLight = new DirectionalLight(0xffffff);
+    dirLight.position.set(0, 10, 100);
+
+    this.scene.add(hemiLight, dirLight);
   }
 }

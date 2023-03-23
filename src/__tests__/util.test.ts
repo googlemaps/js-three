@@ -15,50 +15,41 @@
  */
 
 import { initialize } from "@googlemaps/jest-mocks";
-import { latLngToXY, latLngToVector3Relative } from "./util";
+import {
+  latLngToXY,
+  latLngToVector3Relative,
+  toLatLngAltitudeLiteral,
+  xyToLatLng,
+} from "../util";
 
 beforeEach(() => {
   initialize();
+});
 
-  // fixme: google.maps.LatLngAltitude is missing in the jest-mocks package,
-  //   remove this when that's no longer the case.
-  google.maps.LatLngAltitude = class LatLngAltitude
-    implements google.maps.LatLngAltitude
-  {
-    public altitude = 0;
-    public lat = 0;
-    public lng = 0;
+describe("toLatLngAltitudeLiteral()", () => {
+  test.each([
+    ["LatLngLiteral", { lat: 10, lng: 20 }, { lat: 10, lng: 20, altitude: 0 }],
+    [
+      "LatLngAltitudeLiteral",
+      { lat: 10, lng: 20, altitude: 30 },
+      { lat: 10, lng: 20, altitude: 30 },
+    ],
+    ["LatLng", { lat: 10, lng: 20 }, { lat: 10, lng: 20, altitude: 0 }],
+    [
+      "LatLngAltitude",
+      { lat: 10, lng: 20, altitude: 30 },
+      { lat: 10, lng: 20, altitude: 30 },
+    ],
+  ] as const)("toLatLngAltitudeLiteral: %p", (type, json, output) => {
+    let input: Parameters<typeof toLatLngAltitudeLiteral>[0] = json;
 
-    constructor(
-      value:
-        | google.maps.LatLng
-        | google.maps.LatLngLiteral
-        | google.maps.LatLngAltitude
-        | google.maps.LatLngAltitudeLiteral,
-      noClampNoWrap = false
-    ) {
-      if (value instanceof google.maps.LatLng) {
-        this.lat = value.lat();
-        this.lng = value.lng();
-      } else {
-        this.lat = value.lat;
-        this.lng = value.lng;
-        this.altitude = (value as google.maps.LatLngAltitude).altitude || 0;
-      }
+    if (type === "LatLng" || type === "LatLngAltitude") {
+      input = new google.maps[type]({ lat: 0, lng: 0 });
+      (input as google.maps.LatLng).toJSON = jest.fn(() => json);
     }
 
-    public equals(other: google.maps.LatLngAltitude | null): boolean {
-      return (
-        this.altitude === other.altitude &&
-        this.lat === other.lat &&
-        this.lng === other.lng
-      );
-    }
-
-    public toJSON(): google.maps.LatLngAltitudeLiteral {
-      return { lat: this.lat, lng: this.lng, altitude: this.altitude };
-    }
-  };
+    expect(toLatLngAltitudeLiteral(input)).toEqual(output);
+  });
 });
 
 test.each([
@@ -87,11 +78,15 @@ test.each([
     { x: 16813733.4125, y: -4006716.49009 },
   ],
 ])(
-  "latLngToXY is correct",
+  "latLngToXY and xyToLatLng are correct for %p",
   (latLng: google.maps.LatLngLiteral, expected: { x: number; y: number }) => {
     const [x, y] = latLngToXY(latLng);
     expect(x).toBeCloseTo(expected.x);
     expect(y).toBeCloseTo(expected.y);
+
+    const { lat, lng } = xyToLatLng([x, y]);
+    expect(lat).toBeCloseTo(latLng.lat);
+    expect(lng).toBeCloseTo(latLng.lng);
   }
 );
 

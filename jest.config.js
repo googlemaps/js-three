@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-module.exports = {
-  transform: {
-    "^.+\\.tsx?$": "ts-jest",
-  },
-  collectCoverage: true,
-  testPathIgnorePatterns: ["/dist/"],
+export default {
+  roots: ["<rootDir>/src"],
+  preset: "ts-jest",
+  testPathIgnorePatterns: ["/dist/", "/__utils__/"],
+  testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["jest-extended/all"],
+  setupFiles: ["jest-webgl-canvas-mock"],
 };

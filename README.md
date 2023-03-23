@@ -81,20 +81,36 @@ The y-axis is pointing true north, and the x-axis is pointing east. The
 units are meters. So the point `new Vector3(0, 50, 10)` is 10 meters
 above ground and 50 meters east of the specified anchor point.
 
-> The up-axis used in this library is the z-axis (+x is east
-> and +y is north), which is different from the y-up orientation normally
-> used in three. If you prefer the three.js orientation with the y axis
-> pointing up, use `new ThreeJSOverlayView({upAxis:'Y'})` when creating the
-> overlay.
+This anchor-point and orientation can be set in the constructor, or by using the
+`setAnchor()` and `setUpAxis()`-methods (be aware that all object-positions in
+your scene depend on the anchor-point and orientation, so they have to be
+recomputed when either of them is changed):
 
-All computations on the GPU related to the position use float32 numbers, so
-the precision is limited to about 7 decimal digits. Since the world
-has a circumference of about 40M meters, we cannot use a global reference
-system and still have the precision to show details in the meters to
-centimeters range.
+```typescript
+import { ThreeJSOverlayView } from "@googlemaps/three";
+
+const overlay = new ThreeJSOverlayView({
+  anchor: { lat: 37.7793, lng: -122.4192, altitude: 0 },
+  upAxis: "Y",
+});
+
+overlay.setAnchor({ lat: 35.680432, lng: 139.769013, altitude: 0 });
+overlay.setUpAxis("Z");
+// can also be specified as Vector3:
+overlay.setUpAxis(new Vector3(0, 0, 1));
+```
+
+> The default up-axis used in this library is the z-axis (+x is east
+> and +y is north), which is different from the y-up orientation normally
+> used in three.
+
+All computations on the GPU related to the position use float32 numbers,
+which limits the possible precision to about 7 decimal digits. Because
+of this, we cannot use a global reference system and still have the
+precision to show details in the meters to centimeters range.
 
 This is where the anchor point is important. The anchor specifies the
-coordinates (lat/lng/altitude) where the origin of the world-space
+geo-coordinates (lat/lng/altitude) where the origin of the world-space
 coordinate system is, and you should always define it close to where the
 objects are placed in the scene - unless of course you are only working with
 large-scale (city-sized) objects distributed globally.
@@ -105,6 +121,22 @@ the scaling of meters is only accurate in regions close to the equator. This
 can be compensated for by applying a scale factor that depends on the
 latitude of the anchor. This scale factor is factored into the coordinate
 calculations in WebGlOverlayView based on the latitude of the anchor.
+
+#### Converting coordinates
+
+When you need more than just a single georeferenced object in your scene,
+you need to compute the world-space position for those coordinates. The
+ThreeJSOverlayView class provides a helper function for this conversion that
+takes the current `anchor` and `upAxis` into account:
+
+```typescript
+const coordinates = { lat: 12.34, lng: 56.78 };
+const position: Vector3 = overlay.latLngAltitudeToVector3(coordinates);
+
+// alternative: pass the Vector3 to write the position
+// to as the second parameter, so to set the position of a mesh:
+overlay.latLngAltitudeToVector3(coordinates, mesh.position);
+```
 
 ### Raycasting and Interactions
 
