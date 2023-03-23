@@ -16,12 +16,13 @@
 
 import { babel } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
-import { terser } from "rollup-plugin-terser";
+import terser from "@rollup/plugin-terser";
 import typescript from "@rollup/plugin-typescript";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 
 const babelOptions = {
   extensions: [".js", ".ts"],
+  babelHelpers: "bundled",
 };
 
 const terserOptions = { output: { comments: "some" } };
@@ -42,7 +43,7 @@ export default [
       {
         file: "dist/index.umd.js",
         format: "umd",
-        sourcemap: false,
+        sourcemap: true,
         name: "google.maps.plugins.three",
         globals: {
           three: "THREE",
@@ -51,7 +52,7 @@ export default [
       {
         file: "dist/index.min.js",
         format: "iife",
-        sourcemap: false,
+        sourcemap: true,
         name: "google.maps.plugins.three",
         globals: {
           three: "THREE",
@@ -82,17 +83,20 @@ export default [
   },
   {
     input: "src/index.ts",
+    external: ["three"],
     plugins: [
       typescript({ tsconfig: "./tsconfig.json", declarationDir: "./" }),
       babel({
         presets: ["@babel/preset-modules"],
         babelrc: false,
         extensions: [".js", ".ts"],
+        babelHelpers: "bundled",
       }),
       terser(terserOptions),
     ],
     output: {
       file: "dist/index.esm.js",
+      sourcemap: true,
       format: "esm",
     },
   },
