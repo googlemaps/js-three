@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as THREE from "three";
 import { LOADER_OPTIONS, MAP_ID } from "./config";
-import { ThreeJSOverlayView, latLngToVector3 } from "../src";
+import { ThreeJSOverlayView } from "../src";
 
 import { Loader } from "@googlemaps/js-api-loader";
+import { BoxGeometry, Mesh, MeshMatcapMaterial } from "three";
 
 const mapOptions = {
   center: {
@@ -31,10 +31,9 @@ const mapOptions = {
 };
 
 new Loader(LOADER_OPTIONS).load().then(() => {
-  // instantiate the map
+  // create the map and overlay
   const map = new google.maps.Map(document.getElementById("map"), mapOptions);
-  // instantiate a ThreeJS Scene
-  const scene = new THREE.Scene();
+  const overlay = new ThreeJSOverlayView({ map });
 
   [
     { lat: 45, lng: -90 },
@@ -42,27 +41,20 @@ new Loader(LOADER_OPTIONS).load().then(() => {
     { lat: -45, lng: -90 },
     { lat: -45, lng: 90 },
   ].forEach((latLng: google.maps.LatLngLiteral) => {
-    // Create a box mesh
-    const box = new THREE.Mesh(
-      new THREE.BoxGeometry(10, 50, 10),
-      new THREE.MeshNormalMaterial()
-    );
+    // create a box mesh with origin on the ground, in z-up orientation
+    const geometry = new BoxGeometry(10, 50, 10)
+      .translate(0, 25, 0)
+      .rotateX(Math.PI / 2);
 
+    const box = new Mesh(geometry, new MeshMatcapMaterial());
+
+    // make it huge
     box.scale.multiplyScalar(10000);
 
     // set position at center of map
-    box.position.copy(latLngToVector3(latLng));
-    // set position vertically
-    box.position.setY(25);
+    overlay.latLngAltitudeToVector3(latLng, box.position);
 
     // add box mesh to the scene
-    scene.add(box);
-  });
-
-  // instantiate the ThreeJS Overlay with the scene and map
-  const overlay = new ThreeJSOverlayView({
-    scene,
-    map,
-    THREE,
+    overlay.scene.add(box);
   });
 });
