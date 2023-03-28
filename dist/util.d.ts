@@ -15,21 +15,27 @@
  */
 /// <reference types="google.maps" />
 import { Vector3 } from "three";
+export type LatLngTypes = google.maps.LatLngLiteral | google.maps.LatLng | google.maps.LatLngAltitudeLiteral | google.maps.LatLngAltitude;
 export declare const EARTH_RADIUS = 6371010;
 export declare const WORLD_SIZE: number;
 /**
- * Converts latitude and longitude to meters.
+ * Converts any of the supported position formats into the
+ * google.maps.LatLngAltitudeLiteral format used for the calculations.
+ * @param point
  */
-export declare function latLngToMeters(latLng: google.maps.LatLngLiteral | google.maps.LatLng): {
-    x: number;
-    y: number;
-};
-/**
- * Converts latitude and longitude to world space coordinates with y up.
- */
-export declare function latLngToVector3(point: google.maps.LatLngLiteral | google.maps.LatLng, target?: Vector3): Vector3;
+export declare function toLatLngAltitudeLiteral(point: LatLngTypes): google.maps.LatLngAltitudeLiteral;
 /**
  * Converts latitude and longitude to world space coordinates relative
  * to a reference location with y up.
  */
-export declare function latLngToVector3Relative(point: google.maps.LatLngLiteral | google.maps.LatLng, reference: google.maps.LatLngLiteral | google.maps.LatLng, target?: Vector3): Vector3;
+export declare function latLngToVector3Relative(point: google.maps.LatLngAltitudeLiteral, reference: google.maps.LatLngAltitudeLiteral, target?: Vector3): Vector3;
+/**
+ * Converts WGS84 latitude and longitude to (uncorrected) WebMercator meters.
+ * (WGS84 --> WebMercator (EPSG:3857))
+ */
+export declare function latLngToXY(position: google.maps.LatLngLiteral): number[];
+/**
+ * Converts WebMercator meters to WGS84 latitude/longitude.
+ * (WebMercator (EPSG:3857) --> WGS84)
+ */
+export declare function xyToLatLng(p: number[]): google.maps.LatLngLiteral;
