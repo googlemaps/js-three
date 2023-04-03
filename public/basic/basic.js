@@ -1,4 +1,4 @@
-import { V as Vector3, M as MathUtils, Q as Quaternion, a as Matrix4, R as Raycaster, S as Scene, P as PerspectiveCamera, E as Euler, W as WebGLRenderer, b as PCFSoftShadowMap, s as sRGBEncoding, H as HemisphereLight, D as DirectionalLight, L as Loader, c as Mesh, B as BoxGeometry, d as MeshMatcapMaterial } from './vendor-e04244f7.js';
+import { V as Vector3, M as MathUtils, Q as Quaternion, a as Matrix4, R as Raycaster, S as Scene, P as PerspectiveCamera, E as Euler, W as WebGLRenderer, b as PCFSoftShadowMap, s as sRGBEncoding, H as HemisphereLight, D as DirectionalLight, L as Loader, c as Mesh, B as BoxGeometry, d as MeshMatcapMaterial } from './vendor-472fda4e.js';
 
 /**
  * Copyright 2021 Google LLC
