@@ -97,7 +97,10 @@ new Loader(LOADER_OPTIONS).load().then(() => {
   let highlightedObject: (typeof meshes)[number] | null = null;
 
   overlay.onBeforeDraw = () => {
-    const intersections = overlay.raycast(mousePosition, meshes);
+    const intersections = overlay.raycast(mousePosition, meshes, {
+      recursive: false,
+    });
+
     if (highlightedObject) {
       // when there's a previously highlighted object, reset the highlighting
       highlightedObject.material.color.setHex(DEFAULT_COLOR);

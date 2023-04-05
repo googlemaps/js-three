@@ -20,7 +20,7 @@
  */
 export function createWebGlContext() {
   const gl = new WebGLRenderingContext();
-  const glParameters = {
+  const glParameters: Record<number, unknown> = {
     [gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS]: 8,
     [gl.VERSION]: "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
     [gl.SCISSOR_BOX]: [0, 0, 100, 100],
