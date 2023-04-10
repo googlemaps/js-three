@@ -89,7 +89,7 @@
     "rollup": "^3.19.1",
     "selenium-webdriver": "^4.8.2",
     "ts-jest": "^29.1.0",
-    "three": "^0.151.2",
+    "three": "^0.151.3",
     "typedoc": "^0.24.1",
     "typescript": "^5.0.3"
   },
