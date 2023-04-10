@@ -63,7 +63,7 @@
     "@rollup/plugin-terser": "^0.4.0",
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/d3-random": "^3.0.1",
-    "@types/google.maps": "^3.52.3",
+    "@types/google.maps": "^3.52.5",
     "@types/jest": "^29.4.0",
     "@types/proj4": "^2.5.2",
     "@types/selenium-webdriver": "^4.1.13",
