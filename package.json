@@ -91,7 +91,7 @@
     "ts-jest": "^29.1.0",
     "three": "^0.151.3",
     "typedoc": "^0.24.1",
-    "typescript": "^5.0.3"
+    "typescript": "^5.0.4"
   },
   "publishConfig": {
     "access": "public",
