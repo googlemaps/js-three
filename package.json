@@ -87,7 +87,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.7",
     "rollup": "^3.20.4",
-    "selenium-webdriver": "^4.8.2",
+    "selenium-webdriver": "^4.9.0",
     "ts-jest": "^29.1.0",
     "three": "^0.151.3",
     "typedoc": "^0.24.4",
