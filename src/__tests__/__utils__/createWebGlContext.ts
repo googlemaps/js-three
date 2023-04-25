@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
+// using 'jest-webgl-canvas-mock' as intended as a setup-script in the jest
+// configuration causes an error 'TypeError: Cannot redefine property: window'
+// in newer node-version (last known working version is 18.13.0), which is why
+// we do the initialization manually here.
+// @ts-ignore
+import registerWebglMock from "jest-webgl-canvas-mock/lib/window.js";
+
 /**
  * Creates a mocked WebGL 1.0 context (based on the one provided by
  * the jest-webgl-canvas-mock package) three.js can work with.
  */
 export function createWebGlContext() {
+  registerWebglMock(window);
+
   const gl = new WebGLRenderingContext();
   const glParameters: Record<number, unknown> = {
     [gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS]: 8,

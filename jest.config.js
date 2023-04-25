@@ -20,5 +20,4 @@ export default {
   testPathIgnorePatterns: ["/dist/", "/__utils__/"],
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["jest-extended/all"],
-  setupFiles: ["jest-webgl-canvas-mock"],
 };
