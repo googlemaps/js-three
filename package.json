@@ -53,7 +53,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.21.5",
     "@babel/runtime-corejs3": "^7.21.5",
-    "@googlemaps/jest-mocks": "^2.18.1",
+    "@googlemaps/jest-mocks": "^2.19.0",
     "@googlemaps/js-api-loader": "^1.15.1",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^24.1.0",
