@@ -28,7 +28,7 @@ import {
   Raycaster,
   RaycasterParameters,
   Scene,
-  sRGBEncoding,
+  SRGBColorSpace,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -392,7 +392,7 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
 
     // LinearEncoding is default for historical reasons
     // https://discourse.threejs.org/t/linearencoding-vs-srgbencoding/23243
-    this.renderer.outputEncoding = sRGBEncoding;
+    this.renderer.outputColorSpace = SRGBColorSpace;
 
     const { width, height } = gl.canvas;
     this.renderer.setViewport(0, 0, width, height);
