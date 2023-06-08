@@ -27,6 +27,7 @@ import {
   Quaternion,
   Raycaster,
   RaycasterParameters,
+  REVISION,
   Scene,
   sRGBEncoding,
   Vector2,
@@ -390,9 +391,9 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
 
-    // LinearEncoding is default for historical reasons
-    // https://discourse.threejs.org/t/linearencoding-vs-srgbencoding/23243
-    this.renderer.outputEncoding = sRGBEncoding;
+    // Since r152, default outputColorSpace is SRGB
+    // Deprecated outputEncoding kept for backwards compatibility
+    if (Number(REVISION) < 152) this.renderer.outputEncoding = sRGBEncoding;
 
     const { width, height } = gl.canvas;
     this.renderer.setViewport(0, 0, width, height);
