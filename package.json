@@ -74,7 +74,7 @@
     "chromedriver": "^114.0.2",
     "core-js": "^3.31.0",
     "d3-random": "^3.0.1",
-    "eslint": "^8.44.0",
+    "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-jest": "^27.2.2",
     "eslint-plugin-prettier": "^4.2.1",
