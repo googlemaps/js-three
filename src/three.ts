@@ -312,7 +312,8 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
    * render animation frame.
    * @param options
    */
-  public onStateUpdate(options: google.maps.WebGLStateOptions): void {}
+  public onStateUpdate(options: google.maps.WebGLStateOptions): void;
+  public onStateUpdate(): void {}
 
   /**
    * Overwrite this method to fetch or create intermediate data structures
