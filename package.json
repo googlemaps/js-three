@@ -85,7 +85,7 @@
     "jest-extended": "^4.0.1",
     "jest-webgl-canvas-mock": "^2.5.0",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.8.8",
+    "prettier": "^3.0.1",
     "rollup": "^3.28.0",
     "selenium-webdriver": "^4.11.1",
     "ts-jest": "^29.1.1",
