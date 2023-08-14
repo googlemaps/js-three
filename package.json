@@ -70,7 +70,7 @@
     "@types/stats.js": "^0.17.0",
     "@types/three": "^0.155.0",
     "@typescript-eslint/eslint-plugin": ">=6.2.1",
-    "@typescript-eslint/parser": ">=5.62.0",
+    "@typescript-eslint/parser": ">=6.3.0",
     "chromedriver": "^115.0.0",
     "core-js": "^3.32.0",
     "d3-random": "^3.0.1",
