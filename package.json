@@ -71,7 +71,7 @@
     "@types/stats.js": "^0.17.0",
     "@types/three": "^0.155.0",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
-    "@typescript-eslint/parser": "^6.4.0",
+    "@typescript-eslint/parser": "^6.4.1",
     "core-js": "^3.32.1",
     "d3-random": "^3.0.1",
     "eslint": "^8.47.0",
