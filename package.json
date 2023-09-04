@@ -88,7 +88,7 @@
     "prettier": "^3.0.2",
     "rollup": "^3.28.1",
     "selenium-webdriver": "^4.11.1",
-    "three": "^0.155.0",
+    "three": "^0.156.0",
     "ts-jest": "^29.1.1",
     "typedoc": "^0.25.0",
     "typescript": "^5.1.6"
