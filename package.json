@@ -90,7 +90,7 @@
     "selenium-webdriver": "^4.13.0",
     "three": "^0.157.0",
     "ts-jest": "^29.1.1",
-    "typedoc": "^0.25.1",
+    "typedoc": "^0.25.2",
     "typescript": "^5.2.2"
   },
   "publishConfig": {
