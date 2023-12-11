@@ -65,7 +65,7 @@
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/d3-random": "^3.0.3",
     "@types/google.maps": "^3.54.8",
-    "@types/jest": "^29.5.10",
+    "@types/jest": "^29.5.11",
     "@types/proj4": "^2.5.5",
     "@types/selenium-webdriver": "^4.1.20",
     "@types/stats.js": "^0.17.3",
