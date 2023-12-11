@@ -75,7 +75,7 @@
     "core-js": "^3.33.3",
     "d3-random": "^3.0.1",
     "eslint": "^8.54.0",
-    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jest": "^27.6.0",
     "eslint-plugin-prettier": "^5.0.1",
     "geckodriver": "^4.2.1",
