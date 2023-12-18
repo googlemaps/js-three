@@ -69,7 +69,7 @@
     "@types/proj4": "^2.5.5",
     "@types/selenium-webdriver": "^4.1.21",
     "@types/stats.js": "^0.17.3",
-    "@types/three": "^0.156.0",
+    "@types/three": "^0.159.0",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.14.0",
     "core-js": "^3.34.0",
@@ -88,7 +88,7 @@
     "prettier": "^3.1.1",
     "rollup": "^4.9.1",
     "selenium-webdriver": "^4.16.0",
-    "three": "^0.158.0",
+    "three": "^0.159.0",
     "ts-jest": "^29.1.1",
     "typedoc": "^0.25.3",
     "typescript": "^5.2.2"
