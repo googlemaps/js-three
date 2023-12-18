@@ -72,7 +72,7 @@
     "@types/three": "^0.156.0",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
-    "core-js": "^3.33.3",
+    "core-js": "^3.34.0",
     "d3-random": "^3.0.1",
     "eslint": "^8.54.0",
     "eslint-config-prettier": "^9.1.0",
