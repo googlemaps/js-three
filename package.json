@@ -70,7 +70,7 @@
     "@types/selenium-webdriver": "^4.1.21",
     "@types/stats.js": "^0.17.3",
     "@types/three": "^0.156.0",
-    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "core-js": "^3.35.0",
     "d3-random": "^3.0.1",
