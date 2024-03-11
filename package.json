@@ -67,7 +67,7 @@
     "@types/google.maps": "^3.55.4",
     "@types/jest": "^29.5.12",
     "@types/proj4": "^2.5.5",
-    "@types/selenium-webdriver": "^4.1.21",
+    "@types/selenium-webdriver": "^4.1.22",
     "@types/stats.js": "^0.17.3",
     "@types/three": "^0.156.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
