@@ -29,7 +29,6 @@ import {
   RaycasterParameters,
   REVISION,
   Scene,
-  sRGBEncoding,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -37,6 +36,11 @@ import {
 import { latLngToVector3Relative, toLatLngAltitudeLiteral } from "./util";
 
 import type { LatLngTypes } from "./util";
+
+// Since r162, the sRGBEncoding constant is no longer exported from three.
+// The value is kept here to keep compatibility with older three.js versions.
+// This will be removed with the next major release.
+const sRGBEncoding = 3001;
 
 const DEFAULT_UP = new Vector3(0, 0, 1);
 
