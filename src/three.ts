@@ -398,7 +398,10 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
 
     // Since r152, default outputColorSpace is SRGB
     // Deprecated outputEncoding kept for backwards compatibility
-    if (Number(REVISION) < 152) this.renderer.outputEncoding = sRGBEncoding;
+    if (Number(REVISION) < 152) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.renderer as any).outputEncoding = sRGBEncoding;
+    }
 
     const { width, height } = gl.canvas;
     this.renderer.setViewport(0, 0, width, height);
