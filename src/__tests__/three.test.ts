@@ -36,6 +36,7 @@ import {
   Mesh,
   Object3D,
   PerspectiveCamera,
+  RaycasterParameters,
   Scene,
   Vector2,
   Vector3,
@@ -427,8 +428,9 @@ describe("raycast()", () => {
   test("sets and restores raycaster parameters", () => {
     const raycaster = overlay["raycaster"];
 
-    const origParams = {};
-    const customParams = {};
+    const origParams = {} as unknown as RaycasterParameters;
+    const customParams = {} as unknown as RaycasterParameters;
+
     let currParams = origParams;
     let intersectParams = null;
 
