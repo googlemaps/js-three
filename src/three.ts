@@ -29,7 +29,6 @@ import {
   RaycasterParameters,
   REVISION,
   Scene,
-  sRGBEncoding,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -37,6 +36,11 @@ import {
 import { latLngToVector3Relative, toLatLngAltitudeLiteral } from "./util";
 
 import type { LatLngTypes } from "./util";
+
+// Since r162, the sRGBEncoding constant is no longer exported from three.
+// The value is kept here to keep compatibility with older three.js versions.
+// This will be removed with the next major release.
+const sRGBEncoding = 3001;
 
 const DEFAULT_UP = new Vector3(0, 0, 1);
 
@@ -394,7 +398,10 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
 
     // Since r152, default outputColorSpace is SRGB
     // Deprecated outputEncoding kept for backwards compatibility
-    if (Number(REVISION) < 152) this.renderer.outputEncoding = sRGBEncoding;
+    if (Number(REVISION) < 152) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.renderer as any).outputEncoding = sRGBEncoding;
+    }
 
     const { width, height } = gl.canvas;
     this.renderer.setViewport(0, 0, width, height);
