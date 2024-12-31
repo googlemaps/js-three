@@ -1,14 +1,15 @@
 [![npm](https://img.shields.io/npm/v/@googlemaps/three)][npm-pkg]
 ![Release](https://github.com/googlemaps/js-three/workflows/Release/badge.svg)
 ![Stable](https://img.shields.io/badge/stability-stable-green)
-![Tests/Build Status](https://github.com/googlemaps/js-three/actions/workflows/test.yml/badge.svg)
+[![Tests/Build](https://github.com/googlemaps/js-three/actions/workflows/test.yml/badge.svg)](https://github.com/googlemaps/js-three/actions/workflows/test.yml)
 
 [![codecov](https://codecov.io/gh/googlemaps/js-three/branch/main/graph/badge.svg)](https://codecov.io/gh/googlemaps/js-three)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![solidarity](https://github.com/jpoehnelt/in-solidarity-bot/raw/main/static//badge-flat.png)](https://github.com/apps/in-solidarity)
 
-![GitHub contributors](https://img.shields.io/github/contributors/googlemaps/js-three?color=green)
-[![GitHub License](https://img.shields.io/github/license/googlemaps/js-three?color=blue)][license]
+![Contributors](https://img.shields.io/github/contributors/googlemaps/js-three?color=green)
+[![License](https://img.shields.io/github/license/googlemaps/js-three?color=blue)][license]
+[![StackOverflow](https://img.shields.io/stackexchange/stackoverflow/t/google-maps?color=orange&label=google-maps&logo=stackoverflow)](https://stackoverflow.com/questions/tagged/google-maps)
 [![Discord](https://img.shields.io/discord/676948200904589322?color=6A7EC2&logo=discord&logoColor=ffffff)][Discord server]
 
 # Google Maps ThreeJS Overlay View and Utilities
@@ -22,10 +23,10 @@ vectors in the coordinate system used by three.js.
 
 ## Requirements
 
-* [Sign up with Google Maps Platform]
-* A Google Maps Platform [project] with the **javascript** enabled
-* An [API key] associated with the project above
-* Node.js and NPM
+- [Sign up with Google Maps Platform]
+- A Google Maps Platform [project] with the [**Maps Javascript API**][maps-sdk] enabled
+- An [API key] associated with the project above
+- Node.js and NPM
 
 ## Installation
 
@@ -285,7 +286,7 @@ You can also discuss this library on our [Discord server].
 [documentation]: https://googlemaps.github.io/js-three
 [npm-pkg]: https://npmjs.com/package/@googlemaps/three
 
-[code of conduct]: CODE_OF_CONDUCT.md
+[code of conduct]: ?tab=coc-ov-file#readme
 [contributing guide]: CONTRIBUTING.md
 [Deprecation Policy]: https://cloud.google.com/maps-platform/terms
 [developer community channels]: https://developers.google.com/maps/developer-community
