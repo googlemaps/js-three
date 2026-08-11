@@ -19,8 +19,10 @@ import {
   latLngToXY,
   latLngToVector3Relative,
   toLatLngAltitudeLiteral,
+  vector3ToLatLngAltitudeRelative,
   xyToLatLng,
 } from "../util";
+import { Vector3 } from "three";
 
 beforeEach(() => {
   initialize();
@@ -153,3 +155,58 @@ test.each([
     expect(vector.z).toBeCloseTo(0, 2);
   }
 );
+
+test.each([
+  {
+    point: { lat: 40.713043413517056, lng: -74.00622962150632, altitude: 0 },
+    reference: { lat: 40.7127753, lng: -74.0059728, altitude: 0 },
+  },
+  {
+    point: { lat: 41.27495703856301, lng: -73.9395450002507, altitude: 12 },
+    reference: { lat: 40.7127753, lng: -74.0059728, altitude: 0 },
+  },
+  {
+    point: { lat: 48.861168, lng: 2.324197, altitude: 5 },
+    reference: { lat: 48.862676, lng: 2.319095, altitude: 1 },
+  },
+  {
+    point: { lat: -33.8688, lng: 151.2093, altitude: 0 },
+    reference: { lat: 0, lng: 0, altitude: 0 },
+  },
+])(
+  "vector3ToLatLngAltitudeRelative is inverse of latLngToVector3Relative: %#",
+  ({ point, reference }) => {
+    const vector = latLngToVector3Relative(point, reference);
+    const result = vector3ToLatLngAltitudeRelative(vector, reference);
+
+    expect(result.lat).toBeCloseTo(point.lat, 10);
+    expect(result.lng).toBeCloseTo(point.lng, 10);
+    expect(result.altitude).toBeCloseTo(point.altitude, 10);
+  }
+);
+
+test("vector3ToLatLngAltitudeRelative does not mutate the input vector", () => {
+  const reference = { lat: 40.7127753, lng: -74.0059728, altitude: 0 };
+  const vector = new Vector3(-21.646, 29.813, 3);
+  const original = vector.clone();
+
+  vector3ToLatLngAltitudeRelative(vector, reference);
+
+  expect(vector).toEqual(original);
+});
+
+test("vector3ToLatLngAltitudeRelative writes into the target parameter", () => {
+  const reference = { lat: 0, lng: 0, altitude: 2 };
+  const vector = latLngToVector3Relative(
+    { lat: 1, lng: 1, altitude: 5 },
+    reference
+  );
+  const target = { lat: 0, lng: 0, altitude: 0 };
+
+  const result = vector3ToLatLngAltitudeRelative(vector, reference, target);
+
+  expect(result).toBe(target);
+  expect(target.lat).toBeCloseTo(1, 10);
+  expect(target.lng).toBeCloseTo(1, 10);
+  expect(target.altitude).toBeCloseTo(5, 10);
+});

@@ -333,6 +333,68 @@ describe("latLngAltitudeToVector3()", () => {
   });
 });
 
+describe("vector3ToLatLngAltitude()", () => {
+  let mockedUtil: jest.Mocked<typeof util>;
+  beforeEach(() => {
+    mockedUtil = jest.mocked(util);
+    mockedUtil.toLatLngAltitudeLiteral.mockImplementation((point) => ({
+      altitude: 0,
+      ...(point as google.maps.LatLngAltitudeLiteral),
+    }));
+    mockedUtil.vector3ToLatLngAltitudeRelative.mockImplementation(
+      (point, reference, target = { lat: 0, lng: 0, altitude: 0 }) => {
+        target.lat = reference.lat + 1;
+        target.lng = reference.lng + 2;
+        target.altitude = reference.altitude + point.z;
+        return target;
+      }
+    );
+  });
+
+  test("calls util-functions with un-rotated coordinates", () => {
+    const overlay = new ThreeJSOverlayView({
+      anchor: { lat: 5, lng: 6, altitude: 7 },
+      upAxis: "Y",
+    });
+    const point = new Vector3(1, 3, -2);
+    const result = overlay.vector3ToLatLngAltitude(point);
+
+    expect(mockedUtil.vector3ToLatLngAltitudeRelative).toHaveBeenCalled();
+    const [passedPoint, passedAnchor] =
+      mockedUtil.vector3ToLatLngAltitudeRelative.mock.calls[0];
+
+    expect(passedPoint.x).toBeCloseTo(1, 8);
+    expect(passedPoint.y).toBeCloseTo(2, 8);
+    expect(passedPoint.z).toBeCloseTo(3, 8);
+    expect(passedAnchor).toEqual({ lat: 5, lng: 6, altitude: 7 });
+    expect(result).toEqual({ lat: 6, lng: 8, altitude: 10 });
+  });
+
+  test("does not mutate the input vector", () => {
+    const overlay = new ThreeJSOverlayView({ upAxis: "Y" });
+    const point = new Vector3(1, 3, -2);
+    const original = point.clone();
+
+    overlay.vector3ToLatLngAltitude(point);
+
+    expect(point).toEqual(original);
+  });
+
+  test("writes value to target parameter", () => {
+    const overlay = new ThreeJSOverlayView({
+      anchor: { lat: 5, lng: 6, altitude: 7 },
+    });
+    const target = { lat: 0, lng: 0, altitude: 0 };
+    const result = overlay.vector3ToLatLngAltitude(
+      new Vector3(0, 0, 4),
+      target
+    );
+
+    expect(result).toBe(target);
+    expect(target).toEqual({ lat: 6, lng: 8, altitude: 11 });
+  });
+});
+
 describe("addDefaultLighting()", () => {
   test("lights are added to the default scene", () => {
     const overlay = new ThreeJSOverlayView();

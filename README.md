@@ -138,6 +138,16 @@ const position: Vector3 = overlay.latLngAltitudeToVector3(coordinates);
 overlay.latLngAltitudeToVector3(coordinates, mesh.position);
 ```
 
+The inverse conversion is also available when you need to go from world-space
+coordinates back to geographic coordinates:
+
+```typescript
+const latLngAlt = overlay.vector3ToLatLngAltitude(mesh.position);
+
+// alternative: write into an existing LatLngAltitudeLiteral
+overlay.vector3ToLatLngAltitude(mesh.position, latLngAlt);
+```
+
 ### Raycasting and Interactions
 
 If you want to add interactivity to any three.js content, you typically
@@ -200,10 +210,10 @@ The following example provides a skeleton for adding objects to the map with thi
 
 ```js
 import * as THREE from "three";
-import { ThreeJSOverlayView, latLngToVector3 } from "@googlemaps/three";
+import { ThreeJSOverlayView } from "@googlemaps/three";
 
 // when loading via UMD, remove the imports and use this instead:
-// const { ThreeJSOverlayView, latLngToVector3 } = google.maps.plugins.three;
+// const { ThreeJSOverlayView } = google.maps.plugins.three;
 
 const map = new google.maps.Map(document.getElementById("map"), mapOptions);
 const overlay = new ThreeJSOverlayView({
