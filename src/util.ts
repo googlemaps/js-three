@@ -72,6 +72,34 @@ export function latLngToVector3Relative(
 }
 
 /**
+ * Converts world-space coordinates relative to a reference location back to
+ * WGS84 latitude/longitude/altitude.
+ *
+ * This is the inverse of {@link latLngToVector3Relative} and assumes the same
+ * y-up orientation (east = +x, north = +y, up = +z).
+ */
+export function vector3ToLatLngAltitudeRelative(
+  point: Vector3,
+  reference: google.maps.LatLngAltitudeLiteral,
+  target: google.maps.LatLngAltitudeLiteral = {
+    lat: 0,
+    lng: 0,
+    altitude: 0,
+  }
+): google.maps.LatLngAltitudeLiteral {
+  const { x, y, z } = point;
+  const scale = 1 / cos(degToRad(reference.lat));
+  const [rx, ry] = latLngToXY(reference);
+  const { lat, lng } = xyToLatLng([x * scale + rx, y * scale + ry]);
+
+  target.lat = lat;
+  target.lng = lng;
+  target.altitude = reference.altitude + z;
+
+  return target;
+}
+
+/**
  * Converts WGS84 latitude and longitude to (uncorrected) WebMercator meters.
  * (WGS84 --> WebMercator (EPSG:3857))
  */

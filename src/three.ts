@@ -33,7 +33,11 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
-import { latLngToVector3Relative, toLatLngAltitudeLiteral } from "./util";
+import {
+  latLngToVector3Relative,
+  toLatLngAltitudeLiteral,
+  vector3ToLatLngAltitudeRelative,
+} from "./util";
 
 import type { LatLngTypes } from "./util";
 
@@ -460,6 +464,28 @@ export class ThreeJSOverlayView implements google.maps.WebGLOverlayView {
     target.applyQuaternion(this.rotationInverse);
 
     return target;
+  }
+
+  /**
+   * Convert coordinates from world-space coordinates to WGS84 Latitude
+   * Longitude while taking the origin and orientation into account.
+   *
+   * This is the inverse of {@link latLngAltitudeToVector3}. The input vector
+   * is not modified.
+   */
+  public vector3ToLatLngAltitude(
+    point: Vector3,
+    target: google.maps.LatLngAltitudeLiteral = {
+      lat: 0,
+      lng: 0,
+      altitude: 0,
+    }
+  ): google.maps.LatLngAltitudeLiteral {
+    const position = point
+      .clone()
+      .applyQuaternion(this.rotationInverse.clone().invert());
+
+    return vector3ToLatLngAltitudeRelative(position, this.anchor, target);
   }
 
   // MVCObject interface forwarded to the overlay
